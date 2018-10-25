@@ -1,0 +1,26 @@
+{
+  "name": "tlu-schedule",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "express-session": "^1.15.6",
+    "tinchi-api": "github:t-rekttt/tinchi-api"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/t-rekttt/tlu-schedule.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/t-rekttt/tlu-schedule/issues"
+  },
+  "homepage": "https://github.com/t-rekttt/tlu-schedule#readme"
+}
