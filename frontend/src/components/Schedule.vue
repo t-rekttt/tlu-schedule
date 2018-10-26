@@ -10,22 +10,30 @@
         </div>
       </div>
     </div> -->
-    <div v-for="(subject, key) in generateTimeline(schedule)" :key="key">
-      <b-card :title="subject.lop_hoc_phan">
-        <p class="card-text">
-          {{ subject.timestamp.start.format('DD/MM/YY HH:mm') }} - {{ subject.timestamp.end.format('DD/MM/YY HH:mm') }}
-        </p>
-      </b-card>
-      <!-- {{ subject.lop_hoc_phan }}
-      <br>
-      {{ subject.timestamp.start.format('DD/MM/YY HH:mm') }} - {{ subject.timestamp.end.format('DD/MM/YY HH:mm') }} -->
+    <div v-for="(group, key) in groupTimelineByDay(generateTimeline(schedule))" :key="key">
+      {{ capitalize(group.day.format("dddd, [ngày] D [tháng] M [năm] YYYY")) }}
+      <div v-for="subject in group.subjects">
+        <b-card :title="subject.lop_hoc_phan">
+          <p class="card-text">
+            {{ subject.timestamp.start.format('H[h]mm') }} - {{ subject.timestamp.end.format('H[h]mm') }}
+          </p>
+        </b-card>
+        <!-- {{ subject.lop_hoc_phan }}
+        <br>
+        {{ subject.timestamp.start.format('DD/MM/YY HH:mm') }} - {{ subject.timestamp.end.format('DD/MM/YY HH:mm') }} -->
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue';
 import moment from 'moment-timezone';
+import _ from 'lodash';
+Vue.use(_);
+
 moment.tz('Asia/Ho_Chi_Minh');
+moment.locale('vi-VN');
 
 const period_board = {
   1: {
@@ -234,6 +242,30 @@ export default {
 
       timeline.sort((a, b) => a.timestamp.start - b.timestamp.start);
       return timeline;
+    },
+    groupTimelineByDay(timeline) {
+      let days = {};
+
+      timeline.map(subject => {
+        let timestamp = subject.timestamp.start.clone().startOf('day');
+
+        if (!days[timestamp]) days[timestamp] = {
+          day: timestamp,
+          subjects: []
+        }
+
+        days[timestamp].subjects.push(subject);
+      });
+
+      let result = Object.values(days)
+
+      return result;
+    },
+    moment() {
+      return moment();
+    },
+    capitalize(s) {
+      return _.capitalize(s);
     }
   }
 }
