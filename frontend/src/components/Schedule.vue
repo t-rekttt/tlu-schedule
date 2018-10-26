@@ -11,12 +11,29 @@
       </div>
     </div> -->
     <div v-for="(group, key) in groupTimelineByDay(generateTimeline(schedule))" :key="key">
-      {{ capitalize(group.day.format("dddd, [ngày] D [tháng] M [năm] YYYY")) }}
+      <p>
+        <h5>
+          {{ capitalize(group.day.format("dddd, [ngày] D [tháng] M [năm] YYYY")) }}
+        </h5>
+      </p>
       <div v-for="subject in group.subjects">
-        <b-card :bg-variant="subject.timestamp.end.isSameOrAfter(moment()) ? 'success' : ''" :text-variant="subject.timestamp.end.isSameOrAfter(moment()) ? 'white' : ''" :title="subject.lop_hoc_phan">
-          <p class="card-text">
-            {{ subject.timestamp.start.format('H[h]mm') }} - {{ subject.timestamp.end.format('H[h]mm') }}
-          </p>
+        <b-card class="subject" :bg-variant="subject.timestamp.end.isSameOrAfter(moment()) ? 'success' : 'dark'" text-variant="white">
+          <div class="row">
+            <div class="col-md-2 text-center my-auto">
+              <div class="row">
+                <div class="col-md-12">
+                  <h4 class="my-auto">
+                    {{ subject.timestamp.start.format('H[h]mm') }} - {{ subject.timestamp.end.format('H[h]mm') }}
+                  </h4>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-10 my-auto">
+              <h5 class="my-auto">
+                {{ subject.lop_hoc_phan }}
+              </h5>
+            </div>            
+          </div>
         </b-card>
         <!-- {{ subject.lop_hoc_phan }}
         <br>
@@ -275,5 +292,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+  .subject {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
 </style>
