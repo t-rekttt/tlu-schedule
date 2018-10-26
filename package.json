@@ -1,0 +1,20 @@
+{
+  "name": "tlu-schedule",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cd frontend && npm run build && cp ./dist ../backend/dist -R && cd ../backend && npm run start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/t-rekttt/tlu-schedule.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/t-rekttt/tlu-schedule/issues"
+  },
+  "homepage": "https://github.com/t-rekttt/tlu-schedule#readme"
+}
