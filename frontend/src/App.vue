@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="container">
-      <Schedule :schedule='data'/>
+      <Schedule :schedule='dummy_data'/>
     </div>
   </div>
 </template>
@@ -20,7 +20,7 @@ export default {
   },
   data() {
     return {
-      data
+      dummy_data
     }
   }
 }
