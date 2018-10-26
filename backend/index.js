@@ -22,6 +22,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/', express.static(__dirname + '/dist'));
+
 app.use('/api', apiRouter);
 
 app.get('/test', (req, res) => {
