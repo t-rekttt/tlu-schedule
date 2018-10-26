@@ -13,7 +13,7 @@
     <div v-for="(group, key) in groupTimelineByDay(generateTimeline(schedule))" :key="key">
       {{ capitalize(group.day.format("dddd, [ngày] D [tháng] M [năm] YYYY")) }}
       <div v-for="subject in group.subjects">
-        <b-card :title="subject.lop_hoc_phan">
+        <b-card :bg-variant="subject.timestamp.end.isSameOrAfter(moment()) ? 'success' : ''" :text-variant="subject.timestamp.end.isSameOrAfter(moment()) ? 'white' : ''" :title="subject.lop_hoc_phan">
           <p class="card-text">
             {{ subject.timestamp.start.format('H[h]mm') }} - {{ subject.timestamp.end.format('H[h]mm') }}
           </p>
@@ -202,10 +202,12 @@ export default {
       start.weekday(weekday);
 
       while (start.isSameOrBefore(end)) {
-        if (start.add(1, 'week').isSameOrBefore(end)) {
+        if (start.isSameOrBefore(end)) {
           res.push(start.clone());
         }
+        start.add(1, 'week');
       }
+
 
       return res;
     },
@@ -224,7 +226,7 @@ export default {
       schedule.map(subject => {
         subject.ranges.map(range => {
           range.phases.map(phase => {
-            let timestamps = generateClasses(generateTimestamps(parseDate(range.start), parseDate(range.end), parseInt(phase.day)-1), parseInt(phase.periods[0]), parseInt(phase.periods[phase.periods.length-1]));
+            let timestamps = generateClasses(generateTimestamps(parseDate(range.start), parseDate(range.end), parseInt(phase.day)-2), parseInt(phase.periods[0]), parseInt(phase.periods[phase.periods.length-1]));
 
             timestamps.map(timestamp => {
               let data = {
