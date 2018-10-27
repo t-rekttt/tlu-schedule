@@ -31,6 +31,15 @@
             <div class="col-md-10 my-auto">
               <h5 class="my-auto">
                 {{ subject.lop_hoc_phan }}
+                <div v-if="subject.locations && subject.locations[subject.phase]">
+                  Giai đoạn: {{ subject.phase }}
+                  <br>
+                  Địa điểm: {{ subject.locations[subject.phase].location }}
+                </div>
+                <div v-else>
+                  Địa điểm: {{ subject.dia_diem }}
+                </div>
+                Sĩ số: {{ subject.si_so }}
               </h5>
             </div>            
           </div>
@@ -248,7 +257,9 @@ export default {
             timestamps.map(timestamp => {
               let data = {
                 timestamp,
-                ...subject 
+                ...subject,
+                phase: range.phase,
+                type: phase.type
               };
 
               delete data.ranges;
