@@ -31,15 +31,20 @@
             <div class="col-md-10 my-auto">
               <h5 class="my-auto">
                 {{ subject.lop_hoc_phan }}
+                <span v-if="subject.phase">
+                  ({{ subject.phase }})
+                </span> 
                 <div v-if="subject.locations && subject.locations[subject.phase]">
-                  Giai đoạn: {{ subject.phase }}
-                  <br>
                   Địa điểm: {{ subject.locations[subject.phase].location }}
                 </div>
                 <div v-else>
                   Địa điểm: {{ subject.dia_diem }}
                 </div>
                 Sĩ số: {{ subject.si_so }}
+                <br>
+                <div v-if="subject.so_tc">
+                  Số tín chỉ: {{ subject.so_tc }}
+                </div>
               </h5>
             </div>            
           </div>
