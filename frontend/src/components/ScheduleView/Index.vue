@@ -13,7 +13,12 @@
         </div>
       </div>
     </div>
-    <Schedule :schedule="data" v-if="data && data.length"/>
+    <div class="schedule">
+      <div v-if="loading">
+        <h3 class="text-center text-secondary">Đang tải</h3>
+      </div>
+      <Schedule v-else :schedule="data"/>
+    </div>
   </div>
 </template>
 
@@ -34,10 +39,13 @@ export default {
       },
       selected: {
         drpSemester: null
-      }
+      },
+      loading: false
     }
   },
   beforeCreate() {
+    this.loading = true;
+
     fetch('/api/tkbOptions')
       .then(res => res.json())
       .then(res => {
@@ -56,14 +64,18 @@ export default {
         });
 
         this.selected = selected;
+        this.loading = false;
       });
   },
   watch: {
     'selected.drpSemester'(val, old_val) {
+      this.loading = true;
+
       fetch(`/api/tkb?drpSemester=${val}`)
         .then(res => res.json())
         .then(res => {
           this.data = res.data;
+          this.loading = false;
         })
         .catch(err => {
           alert(err);
@@ -74,4 +86,7 @@ export default {
 </script>
 
 <style>
+  .schedule {
+    margin-top: 30px;
+  }
 </style>

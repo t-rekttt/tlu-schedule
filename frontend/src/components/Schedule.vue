@@ -1,16 +1,9 @@
 <template>
-  <div>
-    <!-- <div v-for="subject in schedule">
-      {{ subject.lop_hoc_phan }}
-      <div v-for="range in subject.ranges">
-        {{ range.start }} - {{ range.end }}: Giai đoạn: {{ range.phase }}
-        <div v-for="phase in range.phases">
-          Thứ {{ phase.day }} tiết {{ phase.periods.join(',') }}
-          {{ generateClasses(generateTimestamps(parseDate(range.start), parseDate(range.end), parseInt(phase.day)-1), parseInt(phase.periods[0]), parseInt(phase.periods[phase.periods.length-1])) }}
-        </div>
-      </div>
-    </div> -->
-    <div v-for="(group, key) in groupTimelineByDay(generateTimeline(schedule))" :key="key">
+  <div id="schedule">
+    <div v-if="!parsed || !parsed.length">
+      <h3 class="text-center text-secondary">Không có lịch của học kì này</h3>
+    </div>
+    <div v-else v-for="(group, key) in parsed" :key="key">
       <p>
         <h5>
           {{ capitalize(group.day.format("dddd, [ngày] D [tháng] M [năm] YYYY")) }}
@@ -301,6 +294,13 @@ export default {
     },
     capitalize(s) {
       return _.capitalize(s);
+    }
+  },
+  computed: {
+    parsed() {
+      if (!this.schedule || !this.schedule.length) return [];
+
+      return this.groupTimelineByDay(this.generateTimeline(this.schedule));
     }
   }
 }
