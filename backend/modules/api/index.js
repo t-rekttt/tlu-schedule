@@ -4,17 +4,17 @@ const tinchi = require('tinchi-api');
 Router.post('/login', (req, res) => {
   if (!req.body) res.fail({ message: 'Not enough data' });
 
-  if (req.body.username && req.body.password) {
+  if (req.body.ma_sv && req.body.password) {
     tinchi
       .init()
-        .then(jar => {
-          req.session.jar = jar;
+      .then(jar => {
+        req.session.jar = jar;
 
-          return tinchi
-            .login(req.body.username, req.body.password, {jar})
-            .then(data => res.success({data}))
-        })
-        .catch(err => res.fail({data: err, message: err.message}));
+        return tinchi
+          .login(req.body.ma_sv, req.body.password, {jar})
+          .then(data => res.success({data}))
+      })
+      .catch(err => res.fail({data: err, message: err.message}));
   }
 })
 
@@ -26,7 +26,7 @@ Router.use((req, res, next) => {
   next();
 });
 
-Router.get('/getTkb', (req, res) => {
+Router.get('/tkb', (req, res) => {
   let { jar } = req.session;
   let { query } = req;
 
