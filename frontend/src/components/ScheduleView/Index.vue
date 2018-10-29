@@ -41,6 +41,8 @@ export default {
     fetch('/api/tkbOptions')
       .then(res => res.json())
       .then(res => {
+        if (res.message === 'Not logged in') window.location = '/login';
+
         this.options = res.data;
 
         let selected = {};
