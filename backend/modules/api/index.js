@@ -20,7 +20,7 @@ Router.post('/login', (req, res) => {
 
 Router.use((req, res, next) => {
   if (!req.session.jar) {
-    res.fail({ message: 'Not logged in' });
+    return res.fail({ message: 'Not logged in' });
   }
 
   next();
