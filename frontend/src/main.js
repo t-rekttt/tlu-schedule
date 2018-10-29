@@ -5,6 +5,7 @@ import BootstrapVue from 'bootstrap-vue'
 import HelloWorld from './components/HelloWorld'
 import Login from './components/Login'
 import ScheduleView from './components/ScheduleView/Index'
+import store from './store.js';
 
 Vue.use(VueRouter);
 Vue.use(BootstrapVue);
@@ -24,5 +25,6 @@ const router = new VueRouter({
 
 new Vue({
   render: h => h(App),
+  store,
   router
 }).$mount('#app')

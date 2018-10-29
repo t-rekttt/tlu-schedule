@@ -7,13 +7,10 @@
           <div class="col-md-6">
             <b-form-select v-model="selected.drpSemester" :options="options.drpSemester" class="mb-3" />
           </div>
-          <div class="col-md-6">
-            <button type="button" class="btn btn-default mb-3">Mặc định</button>
-          </div>
         </div>
       </div>
       <div class="col-md-4">
-        <h5>Chế độ xem</h5>
+        <h5>Chế độ xem lịch</h5>
         <b-form-group class="mb-3 view-mode">
           <b-form-checkbox-group buttons v-model="selected.view_mode" name="view_mode" :options="checkboxes.view_mode.options">
           </b-form-checkbox-group>
@@ -78,7 +75,7 @@ export default {
           }
         });
 
-        this.selected = {...this.selected, ...selected};
+        this.selected = {...this.selected, ...selected, ...this.$store.state.selected};
         this.loading = false;
       });
   },
@@ -95,6 +92,12 @@ export default {
         .catch(err => {
           alert(err);
         });
+    },
+    selected: {
+      handler(val) {
+        this.$store.commit('updateSelected', val);
+      },
+      deep: true
     }
   }
 }
