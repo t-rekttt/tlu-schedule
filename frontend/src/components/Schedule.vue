@@ -6,39 +6,48 @@
     <div v-else v-for="(group, key) in parsed" :key="key">
       <p>
         <h5>
-          {{ capitalize(group.day.format("dddd, [ngày] D [tháng] M [năm] YYYY")) }}
+          {{ group.today ? 'Hôm nay' : capitalize(group.day.format("dddd, [ngày] D [tháng] M [năm] YYYY")) }}
         </h5>
       </p>
       <div v-for="subject in group.subjects">
-        <b-card class="subject" :bg-variant="subject.timestamp.end.isSameOrAfter(moment()) ? 'success' : 'dark'" text-variant="white">
-          <div class="row">
-            <div class="col-md-2 text-center my-auto">
-              <div class="row">
+        <b-card class="subject" :bg-variant="subject.timestamp.end.isSameOrAfter(moment()) ? group.today ? 'danger' : 'success' : 'dark'" text-variant="white">
+          <div class="row subject-infos">
+            <div class="col-md-3 my-auto">
+              <div class="row subject-info">
                 <div class="col-md-12">
-                  <h4 class="my-auto">
+                  <i class="material-icons">access_time</i>
+                  <h3 class="my-auto d-inline">
                     {{ subject.timestamp.start.format('H[h]mm') }} - {{ subject.timestamp.end.format('H[h]mm') }}
-                  </h4>
+                  </h3>
+                </div>
+              </div>
+              <div class="row subject-info ">
+                <div class="col-md-12">
+                  <h3 class="my-auto">
+                    <i class="material-icons">location_on</i>
+                    <span v-if="subject.locations && subject.locations[subject.phase]">
+                      {{ subject.locations[subject.phase].location }}
+                    </span>
+                    <span v-else>
+                      {{ subject.dia_diem }}
+                    </span>
+                  </h3>
                 </div>
               </div>
             </div>
-            <div class="col-md-10 my-auto">
-              <h5 class="my-auto content">
+            <div class="col-md-9 my-auto">
+              <h4 class="my-auto content">
                 {{ subject.lop_hoc_phan }}
                 <span v-if="subject.phase">
                   ({{ subject.phase }})
                 </span> 
-                <div v-if="subject.locations && subject.locations[subject.phase]">
-                  Địa điểm: {{ subject.locations[subject.phase].location }}
-                </div>
-                <div v-else>
-                  Địa điểm: {{ subject.dia_diem }}
-                </div>
+                <br>
                 Sĩ số: {{ subject.si_so }}
                 <br>
                 <div v-if="subject.so_tc">
                   Số tín chỉ: {{ subject.so_tc }}
                 </div>
-              </h5>
+              </h4>
             </div>            
           </div>
         </b-card>
@@ -288,6 +297,14 @@ export default {
 
       let result = Object.values(days)
 
+      result = result.map(day => {
+        if (day.day.clone().isSame(moment(), 'day')) {
+          day.today = true;
+        }
+
+        return day;
+      });
+
       return result;
     },
     moment() {
@@ -304,12 +321,15 @@ export default {
       if (!schedule || !schedule.length) return [];
 
       let timeline = groupTimelineByDay(generateTimeline(schedule));
+
       if (!filter || !filter.length || filter.length === 2) return timeline;
 
       if (filter[0] === 'past')
-        return timeline.filter(subject => subject.day.isBefore(moment()));
+        return timeline.filter(subject => subject.day.isBefore(moment(), 'day'));
 
-      return timeline.filter(subject => subject.day.isAfter(moment()));
+      return timeline.filter(subject => {
+        return subject.day.isSameOrAfter(moment(), 'day');
+      });
     }
   }
 }
@@ -324,5 +344,14 @@ export default {
 
   .content {
     line-height: 1.5;
+  }
+
+  .subject-info {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .subject-infos {
+    padding-left: 10px;
   }
 </style>
