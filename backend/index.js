@@ -3,6 +3,7 @@ const app = express();
 const apiRouter = require('./modules/api/');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const history = require('connect-history-api-fallback');
 
 let PORT = process.env.PORT || 3000;
 
@@ -21,6 +22,8 @@ app.use((req, res, next) => {
 
   next();
 });
+
+app.use(history());
 
 app.use('/', express.static(__dirname + '/dist'));
 
