@@ -14,7 +14,7 @@ Vue.config.productionTip = false
 const routes = [
   { path: '/hello', component: HelloWorld },
   { path: '/login', component: Login },
-  { path: '/schedule', component: ScheduleView }
+  { path: '/', component: ScheduleView }
 ];
 
 const router = new VueRouter({
