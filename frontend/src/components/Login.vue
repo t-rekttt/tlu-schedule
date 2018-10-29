@@ -2,11 +2,11 @@
   <div id="login">
     <div class="row">
       <div class="col-md-6 offset-md-3">
+        <h2 class="text-center">Đăng nhập</h2>
         <b-form @submit="onSubmit" @reset="onReset" v-if="show">
-          <h2 class="text-center">Đăng nhập</h2>
           <b-form-group id="ma_sv"
                         label="Mã sinh viên"
-                        label-for="exampleInput1"
+                        label-for="ma_sv">
             <b-form-input id="ma_sv"
                           type="text"
                           v-model="form.ma_sv"
@@ -16,7 +16,7 @@
           </b-form-group>
           <b-form-group id="password"
                         label="Mật khẩu"
-                        label-for="exampleInput2">
+                        label-for="password">
             <b-form-input id="password"
                           type="password"
                           v-model="form.password"
