@@ -23,4 +23,8 @@ export default {
   #app {
     padding-top: 30px;
   }
+
+  body {
+    background-color: #f5f5f5;
+  }
 </style>
