@@ -215,7 +215,8 @@ const period_board = {
 export default {
   name: 'Schedule',
   props: {
-    schedule: Array
+    schedule: Array,
+    filter: Array
   },
   methods: {
     parseDate(date) {
@@ -298,9 +299,17 @@ export default {
   },
   computed: {
     parsed() {
-      if (!this.schedule || !this.schedule.length) return [];
+      let { schedule, filter, generateTimeline, groupTimelineByDay } = this;
 
-      return this.groupTimelineByDay(this.generateTimeline(this.schedule));
+      if (!schedule || !schedule.length) return [];
+
+      let timeline = groupTimelineByDay(generateTimeline(schedule));
+      if (!filter || !filter.length || filter.length === 2) return timeline;
+
+      if (filter[0] === 'past')
+        return timeline.filter(subject => subject.day.isBefore(moment()));
+
+      return timeline.filter(subject => subject.day.isAfter(moment()));
     }
   }
 }

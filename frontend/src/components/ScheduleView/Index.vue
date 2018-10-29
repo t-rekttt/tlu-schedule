@@ -12,12 +12,19 @@
           </div>
         </div>
       </div>
+      <div class="col-md-4">
+        <h5>Chế độ xem</h5>
+        <b-form-group class="mb-3 view-mode">
+          <b-form-checkbox-group buttons v-model="selected.view_mode" name="view_mode" :options="checkboxes.view_mode.options">
+          </b-form-checkbox-group>
+        </b-form-group>
+      </div>
     </div>
     <div class="schedule">
       <div v-if="loading">
         <h3 class="text-center text-secondary">Đang tải</h3>
       </div>
-      <Schedule v-else :schedule="data"/>
+      <Schedule v-else :schedule="data" :filter="selected.view_mode"/>
     </div>
   </div>
 </template>
@@ -38,9 +45,17 @@ export default {
       options: {
       },
       selected: {
-        drpSemester: null
+        view_mode: ['coming']
       },
-      loading: false
+      loading: false,
+      checkboxes: {
+        view_mode: {
+          options: [
+            {text: 'Đã qua', value: 'past'}, 
+            {text: 'Sắp tới', value: 'coming'}
+          ]
+        }
+      }
     }
   },
   beforeCreate() {
@@ -63,7 +78,7 @@ export default {
           }
         });
 
-        this.selected = selected;
+        this.selected = {...this.selected, ...selected};
         this.loading = false;
       });
   },
@@ -88,5 +103,18 @@ export default {
 <style>
   .schedule {
     margin-top: 30px;
+  }
+
+  .custom-control-label::before {
+    transform: scale(1.6);
+  }
+
+  .custom-control-label::after {
+    transform: scale(1.6);
+  }
+
+  .view-mode .focus {
+    outline: none !important;
+    box-shadow: none !important;
   }
 </style>
