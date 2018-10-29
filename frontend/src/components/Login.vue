@@ -61,7 +61,7 @@ export default {
       .then(res => res.json())
       .then(res => {
         if (res.success) {
-          window.location = '/schedule';
+          window.location = '/';
         }
 
         this.error_message = res.message;
