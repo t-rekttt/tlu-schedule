@@ -17,8 +17,5 @@
     "url": "https://github.com/t-rekttt/tlu-schedule/issues"
   },
   "homepage": "https://github.com/t-rekttt/tlu-schedule#readme",
-  "dependencies": {
-    "@vue/cli-service": "^3.0.5",
-    "vue-cli": "^2.9.6"
-  }
+  "dependencies": {}
 }
