@@ -29,7 +29,7 @@
               </div>
             </div>
             <div class="col-md-10 my-auto">
-              <h5 class="my-auto">
+              <h5 class="my-auto content">
                 {{ subject.lop_hoc_phan }}
                 <span v-if="subject.phase">
                   ({{ subject.phase }})
@@ -311,5 +311,9 @@ export default {
   .subject {
     margin-top: 10px;
     margin-bottom: 10px;
+  }
+
+  .content {
+    line-height: 1.5;
   }
 </style>
