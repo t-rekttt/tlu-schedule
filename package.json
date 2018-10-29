@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cd frontend && pnpm install && pnpm run build && cp ./dist ../backend/dist -R && cd ../backend && pnpm install && pnpm run start"
+    "start": "node ./backend/index"
   },
   "repository": {
     "type": "git",
