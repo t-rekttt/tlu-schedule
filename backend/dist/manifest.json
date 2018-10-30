@@ -4,7 +4,7 @@
     "name": "TLU Schedule",
     "scope": "/",
     "display": "fullscreen",
-    "start_url": "https://tlu-schedule.glitch.me/",
+    "start_url": "/",
     "short_name": "tluschedule",
     "theme_color": "transparent",
     "description": "",
