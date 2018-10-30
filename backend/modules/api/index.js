@@ -1,6 +1,6 @@
 const Router = require('express').Router();
 const tinchi = require('tinchi-api');
-const model = require('./model.js');
+const scheduleModel = require('../db/scheduleModel.js');
 const md5 = require('md5');
 
 Router.post('/login', (req, res) => {
@@ -44,7 +44,7 @@ Router.get('/tkb', (req, res) => {
       let { ma_sv } = req.session.info;
       let hash = md5(ma_sv+(query.drpSemester || ''));
 
-      return model.update({ ma_sv }, { 
+      return scheduleModel.update({ ma_sv }, { 
         ma_sv,
         ...query,
         hash,
