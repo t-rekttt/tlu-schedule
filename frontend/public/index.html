@@ -7,6 +7,7 @@
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
+      <link rel="manifest" href="manifest.json"></link>
     <title>TLU Schedule</title>
   </head>
   <body>
@@ -15,12 +16,7 @@
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->
-    <script>
-      if('serviceWorker' in navigator) {
-        navigator.serviceWorker
-         .register('/service_worker.js')
-         .then(function() { console.log("Service Worker Registered"); });
-      }
-    </script>
+    <script src="manup.min.js"></script>
+    <script src="pwabuilder-sw-register.js"></script>
   </body>
 </html>

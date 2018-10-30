@@ -1,0 +1,25 @@
+{
+    "dir": "ltr",
+    "lang": "Vietnamese",
+    "name": "TLU Schedule",
+    "scope": "/",
+    "display": "browser",
+    "start_url": "https://tlu-schedule.glitch.me/",
+    "short_name": "TLU-Schedule",
+    "theme_color": "transparent",
+    "description": "",
+    "orientation": "portrait-primary",
+    "background_color": "transparent",
+    "related_applications": [],
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "/images/favicon.ico",
+            "sizes": "16x16"
+        },
+        {
+            "src": "/images/favicon.ico",
+            "sizes": "16x16"
+        }
+    ]
+}
