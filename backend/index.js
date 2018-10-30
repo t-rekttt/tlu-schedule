@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const apiRouter = require('./modules/api/');
+const webhookRouter = require('./modules/webhook/');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const history = require('connect-history-api-fallback');
@@ -35,6 +36,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/api', apiRouter);
+
+app.use('/webhook', webhookRouter);
 
 app.use(history());
 
