@@ -3,14 +3,14 @@ const scheduleModel = require('../db/scheduleModel.js');
 const messengerUserModel = require('../db/messengerUserModel.js');
 
 Router.post('/update', (req, res) => {
-  if (!req.data || !req.data['messenger user id'] || !req.data.code) return res.json({
+  if (!req.body || !req.body['messenger user id'] || !req.body.code) return res.json({
     messages: [
       {text: 'Không đủ dữ liệu!'}
     ]
   });
 
-  let messenger_user_id = req.data['messenger user id'];
-  let { code } = req.data;
+  let messenger_user_id = req.body['messenger user id'];
+  let { code } = req.body;
 
   scheduleModel.findOne({ hash: code })
     .then(doc => {
@@ -37,7 +37,7 @@ Router.post('/update', (req, res) => {
 });
 
 Router.post('*', (req, res) => {
-  console.log(req.data);
+  console.log(req.body);
   res.send('ok');
 });
 
