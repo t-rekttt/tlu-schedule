@@ -3,7 +3,7 @@
     "lang": "Vietnamese",
     "name": "TLU Schedule",
     "scope": "/",
-    "display": "browser",
+    "display": "standalone",
     "start_url": "https://tlu-schedule.glitch.me/",
     "short_name": "tluschedule",
     "theme_color": "transparent",
