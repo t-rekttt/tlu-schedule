@@ -5,7 +5,7 @@
     "scope": "/",
     "display": "browser",
     "start_url": "https://tlu-schedule.glitch.me/",
-    "short_name": "TLU-Schedule",
+    "short_name": "tluschedule",
     "theme_color": "transparent",
     "description": "",
     "orientation": "portrait-primary",
