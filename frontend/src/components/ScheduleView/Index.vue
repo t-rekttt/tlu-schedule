@@ -9,19 +9,27 @@
           </div>
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-2">
         <h5>Chế độ xem lịch</h5>
         <b-form-group class="mb-3 view-mode">
-          <b-form-checkbox-group buttons v-model="selected.view_mode" name="view_mode" :options="checkboxes.view_mode.options">
+          <b-form-checkbox-group button-variant="primary" buttons v-model="selected.view_mode" name="view_mode" :options="checkboxes.view_mode.options">
           </b-form-checkbox-group>
         </b-form-group>
+      </div>
+      <div class="col-md-5">
+        <h5>Code <small>(Paste vào chatbot để nhập TKB)</small></h5>
+        <div class="input-group">
+          <b-form-input type="text" :value="data.code" disabled>
+          </b-form-input>
+          <button class="btn btn-primary" @click="copyToClipboard(data.code)">Copy</button>
+        </div>
       </div>
     </div>
     <div class="schedule">
       <div v-if="loading">
         <h3 class="text-center text-secondary">Đang tải</h3>
       </div>
-      <Schedule v-else :schedule="data" :filter="selected.view_mode"/>
+      <Schedule v-else :schedule="data.schedule" :filter="selected.view_mode"/>
     </div>
   </div>
 </template>
@@ -98,6 +106,16 @@ export default {
         this.$store.commit('updateSelected', val);
       },
       deep: true
+    }
+  },
+  methods: {
+    copyToClipboard(str) {
+      const el = document.createElement('textarea');
+      el.value = str;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
     }
   }
 }
