@@ -9,3 +9,5 @@ Router.post('*', (req, res) => {
 Router.post('/update', (req, res) => {
   if (!req.data) return res.fail({ message: 'Not enough data' });
 });
+
+module.exports = Router;
