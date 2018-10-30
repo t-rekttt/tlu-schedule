@@ -1,11 +1,22 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const apiRouter = require('./modules/api/');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const history = require('connect-history-api-fallback');
+const mongoose = require('mongoose');
 
 let PORT = process.env.PORT || 3000;
+
+mongoose.connect(process.env.DB_URI, { keepAlive: true, keepAliveInitialDelay: 300000, useNewUrlParser: true });
+
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+
+db.once('open', () => {
+  console.log('DB connected');
+});
 
 app.use(session({
   secret: 'ahihihihihi',
