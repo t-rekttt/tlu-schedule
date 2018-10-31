@@ -21,7 +21,10 @@ Router.post('/login', (req, res) => {
           .login(ma_sv, password, {jar})
           .then(data => res.success({data}))
       })
-      .catch(err => res.fail({data: err, message: err.message}));
+      .catch(err => {
+        console.log(err);
+        res.fail({data: err, message: err.message})
+      });
   }
 })
 
