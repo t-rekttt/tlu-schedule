@@ -10,6 +10,7 @@
 import ScheduleView from './components/ScheduleView/Index.vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'whatwg-fetch'
 
 export default {
   name: 'app',
