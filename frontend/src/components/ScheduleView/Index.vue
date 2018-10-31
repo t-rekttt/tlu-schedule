@@ -66,7 +66,7 @@ export default {
   beforeCreate() {
     this.loading = true;
 
-    fetch('/api/tkbOptions')
+    fetch('/api/tkbOptions', { credentials: 'include' })
       .then(res => res.json())
       .then(res => {
         if (res.message === 'Not logged in') window.location = '/login';
@@ -91,7 +91,7 @@ export default {
     'selected.drpSemester'(val, old_val) {
       this.loading = true;
 
-      fetch(`/api/tkb?drpSemester=${val}`)
+      fetch(`/api/tkb?drpSemester=${val}`, { credentials: 'include' })
         .then(res => res.json())
         .then(res => {
           this.data = res.data;
