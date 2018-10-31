@@ -48,7 +48,7 @@ Router.get('/tkb', (req, res) => {
     });
   }
 
-  let messenger_user_id = req.body['messenger user id'];
+  let messenger_user_id = req.query['messenger user id'];
 
   messengerUserModel.findOne({
     messenger_user_id
