@@ -100,7 +100,11 @@ Router.get('/tkb', (req, res) => {
         }
 
         return res.json({
-          messages: messages.map(message => { text: message })
+          messages: messages.map(message => { 
+            return {
+              text: message 
+            }
+          })
         });
       }
     })
