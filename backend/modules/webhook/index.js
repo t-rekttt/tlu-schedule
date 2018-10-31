@@ -25,7 +25,7 @@ Router.post('/update', (req, res) => {
         });
       }
 
-      messengerUserModel.update({ messenger_user_id }, {
+      messengerUserModel.updateOne({ messenger_user_id }, {
         messenger_user_id,
         hash: code
       }, { upsert: true })
