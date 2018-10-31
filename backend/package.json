@@ -10,7 +10,7 @@
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "md5": "^2.2.1",
-    "mongoose": "^5.3.7",
+    "mongoose": "^5.3.8",
     "tinchi-api": "git+https://github.com/t-rekttt/tinchi-api.git"
   },
   "devDependencies": {},
