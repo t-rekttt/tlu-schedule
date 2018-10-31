@@ -1,7 +1,7 @@
 const Router = require('express').Router();
 const scheduleModel = require('../db/scheduleModel.js');
 const messengerUserModel = require('../db/messengerUserModel.js');
-const {  } = require('tinchi-api');
+const { generateTimeline, groupTimelineByDay } = require('tinchi-api');
 
 Router.post('/update', (req, res) => {
   if (!req.body || !req.body['messenger user id'] || !req.body.code) {
