@@ -82,10 +82,10 @@ Router.get('/tkb', (req, res) => {
     .then(groupTimelineByDay)
     .then(timeline => {
       if (req.query.today) {
-        timeline = timeline.filter(day => day.today);
+        timeline = timeline.filter(day => day.today)[0];
 
         var messages = [];
-        if (!timeline || !timeline.subjects || !timeline.subjects.length) {
+        if (!timeline) {
           messages.push('Bạn không có lịch môn nào hôm nay!');
         } else {
           messages.push('Hôm nay bạn có các môn:\n');
