@@ -56,8 +56,9 @@ export default {
         body: JSON.stringify(this.form),
         headers: {
           'Content-Type': 'application/json'
-        }
-      }, { credentials: 'include' })
+        },
+        credentials: 'include'
+      })
       .then(res => res.json())
       .then(res => {
         if (res.success) {
