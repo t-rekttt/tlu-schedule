@@ -95,7 +95,7 @@ Router.get('/tkb', (req, res) => {
             let time_range = `${ subject.timestamp.start.format('H[h]mm') }-${ subject.timestamp.end.format('H[h]mm') }`;
             let name = subject.lop_hoc_phan;
 
-            messages.push(`${name}: ${time_range} tại ${location}\n`);
+            messages.push(`${name}\nThời gian: ${time_range}\nĐịa điểm: ${location}`);
           });
         }
 
