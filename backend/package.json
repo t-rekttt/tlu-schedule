@@ -11,7 +11,7 @@
     "express-session": "^1.15.6",
     "md5": "^2.2.1",
     "mongoose": "^5.3.7",
-    "tinchi-api": "github:t-rekttt/tinchi-api"
+    "tinchi-api": "git+https://github.com/t-rekttt/tinchi-api.git"
   },
   "devDependencies": {},
   "scripts": {
