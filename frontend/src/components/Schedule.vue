@@ -65,7 +65,7 @@ import moment from 'moment-timezone';
 import _ from 'lodash';
 Vue.use(_);
 
-moment.tz('Asia/Ho_Chi_Minh');
+moment.tz.setDefault('Asia/Ho_Chi_Minh');
 moment.locale('vi-VN');
 
 const period_board = {
