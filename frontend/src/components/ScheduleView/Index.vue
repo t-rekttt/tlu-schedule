@@ -62,9 +62,9 @@ export default {
     }
   },
   created() {
-    let isDataExists = !this.data || !Object.keys(this.data).length;
+    let isDataExists = this.data && Object.keys(this.data).length;
 
-    if (isDataExists) this.loading = true;
+    if (!isDataExists) this.loading = true;
 
     fetch('/api/tkbOptions', { credentials: 'include' })
       .then(res => res.json())
