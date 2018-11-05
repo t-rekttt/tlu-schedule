@@ -46,7 +46,7 @@ export default {
   },
   data() {
     return {
-      data: [],
+      data: this.$store.state.data,
       options: {
       },
       selected: {
@@ -63,13 +63,20 @@ export default {
       }
     }
   },
-  beforeCreate() {
-    this.loading = true;
+  mounted() {
+    if (!this.data || !Object.keys(this.data).length) this.loading = true;
 
     fetch('/api/tkbOptions', { credentials: 'include' })
       .then(res => res.json())
       .then(res => {
-        if (res.message === 'Not logged in') window.location = '/login';
+        this.loading = false;
+        if (res.message === 'Not logged in') {
+          if (!this.data) {
+            window.location = '/login';
+          }
+          
+          return;          
+        }
 
         this.options = res.data;
 
@@ -84,7 +91,6 @@ export default {
         });
 
         this.selected = {...this.selected, ...selected, ...this.$store.state.selected};
-        this.loading = false;
       });
   },
   watch: {
@@ -106,6 +112,11 @@ export default {
         this.$store.commit('updateSelected', val);
       },
       deep: true
+    },
+    data: {
+      handler(val) {
+        this.$store.commit('updateData', val);
+      }
     }
   },
   methods: {

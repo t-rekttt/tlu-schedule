@@ -6,11 +6,15 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    selected: {}
+    selected: {},
+    data: {}
   },
   mutations: {
     updateSelected(state, selected) {
       state.selected = {...state.selected, ...selected}
+    },
+    updateData(state, data) {
+      state.data = data;
     }
   },
   plugins: [createPersistedState()]
