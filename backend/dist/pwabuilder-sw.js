@@ -15,6 +15,10 @@ self.addEventListener('install', function(event) {
 //If any fetch fails, it will look for the request in the cache and serve it from there first
 self.addEventListener('fetch', function(event) {
   var updateCache = function(request){
+    if (request.cache === 'only-if-cached' && request.mode !== 'same-origin') {
+      return;
+    }
+
     return caches.open('pwabuilder-offline').then(function (cache) {
       return fetch(request).then(function (response) {
         console.log('[PWA Builder] add page to offline'+response.url)
