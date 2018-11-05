@@ -6,7 +6,9 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    selected: {},
+    selected: {
+      view_mode: ['coming']
+    },
     data: {}
   },
   mutations: {
