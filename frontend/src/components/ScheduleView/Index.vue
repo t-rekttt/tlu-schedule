@@ -49,9 +49,7 @@ export default {
       data: this.$store.state.data,
       options: {
       },
-      selected: {
-        view_mode: ['coming']
-      },
+      selected: this.$store.state.selected,
       loading: false,
       checkboxes: {
         view_mode: {
@@ -63,15 +61,17 @@ export default {
       }
     }
   },
-  mounted() {
-    if (!this.data || !Object.keys(this.data).length) this.loading = true;
+  created() {
+    let isDataExists = !this.data || !Object.keys(this.data).length;
+
+    if (isDataExists) this.loading = true;
 
     fetch('/api/tkbOptions', { credentials: 'include' })
       .then(res => res.json())
       .then(res => {
         this.loading = false;
         if (res.message === 'Not logged in') {
-          if (!this.data) {
+          if (!isDataExists) {
             window.location = '/login';
           }
           
@@ -90,7 +90,7 @@ export default {
           }
         });
 
-        this.selected = {...this.selected, ...selected, ...this.$store.state.selected};
+        if (!this.selected || !this.selected.drpSemester) this.selected = {...this.selected, ...selected, ...this.$store.state.selected};
       });
   },
   watch: {
@@ -104,7 +104,7 @@ export default {
           this.loading = false;
         })
         .catch(err => {
-          alert(err);
+          console.log(err);
         });
     },
     selected: {
