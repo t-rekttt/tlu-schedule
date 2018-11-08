@@ -1,5 +1,6 @@
 # tlu-schedule
-Demo web mình viết sử dụng các hàm từ https://github.com/t-rekttt/tinchi-api để hiển thị lịch học của trường Đại học Thủy Lợi. Ngoài ra còn có chức năng lưu TKB và nhập vào chatbot tại https://m.me/506273246543095
+Demo web mình viết sử dụng các hàm từ https://github.com/t-rekttt/tinchi-api để hiển thị lịch học của trường Đại học Thủy Lợi. 
+Ngoài ra còn có chức năng lưu TKB (cần database) và nhập vào chatbot tại https://m.me/506273246543095
 
 ## Cách sử dụng
 1. Cài đặt
