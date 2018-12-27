@@ -1,7 +1,11 @@
 <template>
   <div>
-    <div class="float-right">
-      <button class="btn btn-danger" @click="logout">Đăng xuất</button>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="float-right">
+          <button class="btn btn-danger" @click="logout">Đăng xuất</button>
+        </div>
+      </div>
     </div>
     <div class="row text-center">
       <div class="col-md-2">
