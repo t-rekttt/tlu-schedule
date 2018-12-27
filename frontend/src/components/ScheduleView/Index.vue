@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div class="row">
+    <div class="float-right">
+      <button class="btn btn-danger" @click="logout">Đăng xuất</button>
+    </div>
+    <div class="row text-center">
       <div class="col-md-2">
         <h5>Chọn học kì</h5>
         <div class="row">
@@ -9,7 +12,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-2">
+      <div class="col-md-3">
         <h5>Chế độ xem lịch</h5>
         <b-form-group class="mb-3 view-mode">
           <b-form-checkbox-group button-variant="primary" buttons v-model="selected.view_mode" name="view_mode" :options="checkboxes.view_mode.options">
@@ -127,6 +130,10 @@ export default {
       el.select();
       document.execCommand('copy');
       document.body.removeChild(el);
+    },
+    logout() {
+      localStorage.clear();
+      window.location = '/login';
     }
   }
 }
