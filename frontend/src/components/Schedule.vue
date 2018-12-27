@@ -322,7 +322,9 @@ export default {
 
       let timeline = groupTimelineByDay(generateTimeline(schedule));
 
-      if (!filter || !filter.length || filter.length === 2) return timeline;
+      if (!filter.length) return [];
+
+      if (filter.length === 2) return timeline;
 
       if (filter[0] === 'past')
         return timeline.filter(subject => subject.day.isBefore(moment(), 'day'));
