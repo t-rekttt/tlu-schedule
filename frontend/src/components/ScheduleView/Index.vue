@@ -26,9 +26,9 @@
       <div class="col-md-5">
         <h5>Code <small>(Paste vào chatbot để nhập TKB)</small></h5>
         <div class="input-group">
-          <b-form-input type="text" :value="data.code" disabled>
+          <b-form-input type="text" :value="data.code" readonly id="code">
           </b-form-input>
-          <button class="btn btn-primary" @click="copyToClipboard(data.code)">Copy</button>
+          <button class="btn btn-primary" data-clipboard-target="#code">Copy</button>
         </div>
       </div>
     </div>
@@ -45,6 +45,8 @@
 import Schedule from '../Schedule.vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import ClipboardJS from 'clipboard'
+var clipboard = new ClipboardJS('.btn');
 
 export default {
   name: 'ScheduleView',
