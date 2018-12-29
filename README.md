@@ -14,4 +14,5 @@ npm install
 DB_URI=<YOUR_MONGODB_URI>
 ```
 Thay *<YOUR_MONGODB_URI>* thành URI mongodb database của bạn
+
 3. `node backend/index.js`
