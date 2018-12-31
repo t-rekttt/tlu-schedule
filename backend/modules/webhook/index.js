@@ -120,7 +120,7 @@ Router.get('/tkb', (req, res) => {
           timeline.map(day => {
             let timestamp = day.day.format('dddd, [ngày] D [tháng] M [năm] YYYY');
 
-            let message = _.capitalize(`${timestamp}:\n\n`);
+            let message = _.capitalize(`${timestamp}:\n`);
 
             day.subjects.map(subject => {
               let location = (subject.locations && subject.locations[subject.phase]) ? subject.locations[subject.phase].location : subject.dia_diem;
