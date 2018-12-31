@@ -40,11 +40,18 @@ Router.get('/tkb', (req, res) => {
   let { jar } = req.session;
   let { query } = req;
 
-  tinchi.getTkb(query, {jar})
+  let tkbPromise = tinchi.getTkb(query, {jar})
     .then(({ data, options }) => data)
-    .then(tinchi.parseTkb)
+    .then(tinchi.parseTkb);
+
+  let { ma_sv } = req.session.info;
+
+  tkbPromise
     .then(data => {
-      let { ma_sv } = req.session.info;
+      if (!data || !data.length) {
+        return;
+      }
+      
       let hash = md5(ma_sv+(query.drpSemester || ''));
 
       return scheduleModel.update({ ma_sv }, { 
@@ -52,24 +59,29 @@ Router.get('/tkb', (req, res) => {
         ...query,
         hash,
         schedule: data
-      }, { upsert: true })
-      .then(() => {
-        return res.success({ 
-          data: {
-            schedule: data,
-            code: hash
-          }
-        });
-      })
-      .catch(err => {
-        return res.success({ 
-          data: {
-            schedule: data,
-            code: 'Lỗi không xác định! Vui lòng tải lại trang'
-          } 
-        });
+      }, { upsert: true });
+    })
+    .catch(console.log);
+
+  tkbPromise
+    .then(data => {
+      let hash = md5(ma_sv+(query.drpSemester || ''));
+      
+      return res.success({ 
+        data: {
+          schedule: data,
+          code: hash
+        }
       });
     })
+    .catch(err => {
+      return res.success({ 
+        data: {
+          schedule: data,
+          code: 'Lỗi không xác định! Vui lòng tải lại trang'
+        } 
+      });
+    });
 });
 
 Router.get('/tkbOptions', (req, res) => {
