@@ -59,7 +59,7 @@ Router.get('/tkb', (req, res) => {
     if (!doc) {
       return res.json({
         messages: [
-          {text: 'Vui lòng cập nhật lịch học trước khi tra cứu!'}
+          {text: 'Vui lòng cập nhật lịch học trước khi tra cứu bằng cách sau:\n 1. Đăng nhập trên trang https://tkb.thao.pw\n 2. Chọn lịch của học kì bạn cần cập nhật\n 3. Copy code trên trang \n 4. Chọn "Nhập code" trên page và gửi code vừa copy'}
         ]
       });
     }
