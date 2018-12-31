@@ -2,6 +2,8 @@ const Router = require('express').Router();
 const scheduleModel = require('../db/scheduleModel.js');
 const messengerUserModel = require('../db/messengerUserModel.js');
 const { generateTimeline, groupTimelineByDay } = require('tinchi-api');
+const moment = require('moment');
+const _ = require('lodash');
 
 Router.post('/update', (req, res) => {
   if (!req.body || !req.body['messenger user id'] || !req.body.code) {
@@ -106,6 +108,39 @@ Router.get('/tkb', (req, res) => {
             }
           })
         });
+      } else if (req.query.next7days) {
+        timeline = timeline.filter(day => day.day.isBetween(moment(), moment().add('1', 'week')));
+
+        var messages = [];
+        if (!timeline && !timeline.length) {
+          messages.push('Bạn không có lịch môn nào trong vòng 7 ngày tới!');
+        } else {
+          messages.push('7 ngày tới bạn có lịch các môn:\n');
+
+          timeline.map(day => {
+            let timestamp = day.day.format('dddd, [ngày] D [tháng] M [năm] YYYY');
+
+            let message = `${timestamp}:\n\n`;
+
+            day.subjects.map(subject => {
+              let location = (subject.locations && subject.locations[subject.phase]) ? subject.locations[subject.phase].location : subject.dia_diem;
+              let time_range = `${ subject.timestamp.start.format('H[h]mm') }-${ subject.timestamp.end.format('H[h]mm') }`;
+              let name = subject.lop_hoc_phan;
+
+              message += `${name}\nThời gian: ${time_range}\nĐịa điểm: ${location}\n\n`;
+            });
+
+            messages.push(_.capitalize(message));
+          });
+
+          return res.json({
+            messages: messages.map(message => { 
+              return {
+                text: message 
+              }
+            })
+          });
+        }
       }
     })
   });
