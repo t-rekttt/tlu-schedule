@@ -112,7 +112,7 @@ Router.get('/tkb', (req, res) => {
         timeline = timeline.filter(day => day.day.isBetween(moment(), moment().add('1', 'week')));
 
         var messages = [];
-        if (!timeline && !timeline.length) {
+        if (!timeline || !timeline.length) {
           messages.push('Bạn không có lịch môn nào trong vòng 7 ngày tới!');
         } else {
           messages.push('7 ngày tới bạn có lịch các môn:\n');
