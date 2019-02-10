@@ -39,49 +39,80 @@ Router.use((req, res, next) => {
 Router.get('/tkb', (req, res) => {
   let { jar } = req.session;
   let { query } = req;
-
-  let tkbPromise = tinchi.getTkb(query, {jar})
-    .then(({ data, options }) => data)
-    .then(tinchi.parseTkb);
-
   let { ma_sv } = req.session.info;
+  let hash = md5(ma_sv+(query.drpSemester || ''));
 
-  tkbPromise
+  let tkbParsePromise = tinchi.getTkb(query, {jar})
+    .then(({ data, options }) => data)
+    .then(tinchi.parseTkb)
     .then(data => {
-      if (!data || !data.length) {
-        return;
-      }
-      
-      let hash = md5(ma_sv+(query.drpSemester || ''));
-
-      return scheduleModel.update({ ma_sv }, { 
+      return {
+        type: 'parser',
         ma_sv,
         ...query,
+        code: hash,
         hash,
         schedule: data
-      }, { upsert: true });
-    })
-    .catch(console.log);
+      }
+    });
 
-  tkbPromise
-    .then(data => {
-      let hash = md5(ma_sv+(query.drpSemester || ''));
-      
-      return res.success({ 
-        data: {
-          schedule: data,
-          code: hash
-        }
-      });
-    })
-    .catch(err => {
-      return res.success({ 
-        data: {
-          schedule: data,
-          code: 'Lỗi không xác định! Vui lòng tải lại trang'
-        } 
+  let tkbDbPromise = scheduleModel.findOne({ ma_sv, drpSemester: query.drpSemester })
+    .lean()
+    .exec()
+    .then(doc => {
+      return new Promise(resolve => {
+        if (doc) resolve({
+          type: 'database',
+          ...doc
+        });
       });
     });
+
+  let timeout = new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject('timeout');
+    }, 5000);
+  });
+
+  Promise.race([
+    tkbParsePromise,
+    tkbDbPromise,
+    timeout
+  ])
+  .then(data => {
+    console.log(data);
+    if (data.type === 'parser') {
+      scheduleModel
+        .update(
+          { ma_sv }, 
+          data,
+          { upsert: true }
+        )
+        .catch(console.log);
+    }
+
+    delete data.type;
+
+    return res.success({ data });
+  })
+  .catch(err => {
+    if (err === 'timeout') {
+      return res.success({ 
+        data: {
+          schedule: [],
+          code: 'Tải dữ liệu thất bại do hệ thống chậm phản hồi! Vui lòng thử lại sau!'
+        }
+      });
+    }
+
+    console.log(err);
+    return res.success({ 
+      data: {
+        schedule: [],
+        code: 'Lỗi không xác định! Vui lòng tải lại trang'
+      } 
+    });
+  })
 });
 
 Router.get('/tkbOptions', (req, res) => {
