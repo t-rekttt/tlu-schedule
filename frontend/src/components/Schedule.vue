@@ -1,7 +1,12 @@
 <template>
   <div id="schedule">
     <div v-if="!parsed || !parsed.length">
-      <h3 class="text-center text-secondary">Không có lịch của học kì này</h3>
+      <div v-if="!schedule.length">
+        <h3 class="text-center text-secondary">Không có lịch của học kì này</h3>
+      </div>
+      <div v-else>
+        <h3 class="text-center text-secondary">Đã hết lịch môn học kì này</h3>
+      </div>
     </div>
     <div v-else v-for="(group, key) in parsed" :key="key">
       <p>

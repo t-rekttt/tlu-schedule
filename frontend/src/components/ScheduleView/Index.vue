@@ -79,27 +79,32 @@ export default {
       .then(res => res.json())
       .then(res => {
         this.loading = false;
+
         if (res.message === 'Not logged in') {
           if (!isDataExists) {
-            window.location = '/login';
+            return window.location = '/login';
           }
           
+          this.options = [this.$store.state.selected];
+          this.data.code = 'Hãy đăng nhập lại để cập nhật code';
           return;          
+        } else {
+          this.options = res.data;
+
+          let selected = {};
+
+          Object.keys(res.data).map(key => {
+            let default_value = res.data[key].filter(option => option.selected)[0];
+
+            if (default_value) {
+              selected[key] = default_value.value;
+            }
+          });
+
+          if (!this.selected || !this.selected.drpSemester) this.selected = {...this.selected, ...selected, ...this.$store.state.selected};
         }
 
-        this.options = res.data;
 
-        let selected = {};
-
-        Object.keys(res.data).map(key => {
-          let default_value = res.data[key].filter(option => option.selected)[0];
-
-          if (default_value) {
-            selected[key] = default_value.value;
-          }
-        });
-
-        if (!this.selected || !this.selected.drpSemester) this.selected = {...this.selected, ...selected, ...this.$store.state.selected};
       });
   },
   watch: {
