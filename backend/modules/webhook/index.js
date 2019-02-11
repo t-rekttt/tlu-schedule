@@ -71,11 +71,7 @@ Router.get('/tkb', (req, res) => {
     })
     .then(doc => {
       if (!doc) {
-        return res.json({
-          messages: [
-            {text: 'Không tìm thấy lịch học'}
-          ]
-        });
+        throw 'Không tìm thấy lịch học';
       }
 
       return doc.schedule;
@@ -133,16 +129,34 @@ Router.get('/tkb', (req, res) => {
             messages.push(message);
           });
 
-          return res.json({
-            messages: messages.map(message => { 
-              return {
-                text: message 
-              }
-            })
-          });
         }
+        
+        return res.json({
+          messages: messages.map(message => { 
+            return {
+              text: message 
+            }
+          })
+        });
       }
     })
+    .catch(err => {
+      if (typeof err === 'string') {
+        return res.json({
+          messages: [
+            {text: err}
+          ]
+        });
+      }
+
+      console.log(err);
+
+      return res.json({
+        messages: [
+          {text: err.message}
+        ]
+      });
+    });
   });
 });
 
