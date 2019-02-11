@@ -146,6 +146,43 @@ Router.get('/tkb', (req, res) => {
   });
 });
 
+Router.get('/login_button', (req, res) => {
+  if (!req.query || !req.query['messenger user id']) {
+    return res.json({
+      messages: [
+        {text: 'Không đủ dữ liệu!'}
+      ]
+    });
+  }
+
+  return res.json({
+    messages:[
+      {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'generic',
+            image_aspect_ratio: 'square',
+            elements: [{
+              title: 'Mời bạn đăng nhập và chọn lịch học để cập nhật!',
+              subtitle: 'Choose your preferences',
+              buttons:[
+                {
+                  type: 'web_url',
+                  url: 'https://tkb.thao.pw/login?messenger_user_id='+req.query['messenger user id'],
+                  title: 'Đăng nhập',
+                  messenger_extensions: true,
+                  webview_height_ratio: 'tall'
+                }
+              ]
+            }]
+          }
+        }
+      }
+    ]
+  });
+});
+
 Router.post('*', (req, res) => {
   console.log(req.body);
   res.send('ok');
