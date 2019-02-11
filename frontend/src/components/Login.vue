@@ -47,6 +47,17 @@ export default {
     }
   },
   methods: {
+    getQueryString() {
+        let qs = {};
+
+        let query = new URL(window.location).searchParams;
+
+        for (let q of query) {
+          qs[q[0]] = q[1];
+        }
+
+        return qs;
+    },
     onSubmit (evt) {
       this.error_message = null;
       evt.preventDefault();
@@ -62,7 +73,8 @@ export default {
       .then(res => res.json())
       .then(res => {
         if (res.success) {
-          window.location = '/';
+          console.log(this.getQueryString());
+          this.$router.push({ path: '/', query: this.getQueryString() });
         }
 
         this.error_message = res.message;
