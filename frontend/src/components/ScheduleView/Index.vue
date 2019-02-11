@@ -143,6 +143,15 @@ export default {
       document.body.removeChild(el);
     },
     logout() {
+      MessengerExtensions.requestCloseBrowser(
+        success => {
+
+        }, 
+        err => {
+
+        }
+      );
+
       localStorage.clear();
       window.location = '/login';
     }
