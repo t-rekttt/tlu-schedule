@@ -80,7 +80,7 @@ Router.get('/tkb', (req, res) => {
     timeout
   ])
   .then(data => {
-    console.log(data);
+
     if (data.type === 'parser') {
       scheduleModel
         .update(
