@@ -151,7 +151,11 @@ Router.post('/updateFromMessenger', (req, res) => {
             { broadcast_text: 'Không tìm thấy lịch học. Vui lòng cập nhật lại code!' }
           )
           .then(data => res.json(data))
-          .catch(err => res.fail({ message: err.message }));
+          .catch(err => {
+            console.log(err);
+
+            return res.fail({ data: null, message: err.message });
+          });
       }
 
       return messengerUserModel.updateOne({ messenger_user_id }, {
@@ -169,7 +173,11 @@ Router.post('/updateFromMessenger', (req, res) => {
           );
       })
       .then(data => res.json(data))
-      .catch(err => res.fail({ message: err.message }));
+      .catch(err => {
+        console.log(err);
+        
+        return res.fail({ data: null, message: err.message });
+      });
     });
 });
 
