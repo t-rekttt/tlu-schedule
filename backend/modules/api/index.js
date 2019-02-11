@@ -1,6 +1,8 @@
 const Router = require('express').Router();
 const tinchi = require('tinchi-api');
 const scheduleModel = require('../db/scheduleModel.js');
+const chatfuelController = require('../chatfuel/chatfuelController.js');
+const messengerUserModel = require('../db/messengerUserModel.js');
 const md5 = require('md5');
 
 Router.post('/login', (req, res) => {
@@ -123,6 +125,52 @@ Router.get('/tkbOptions', (req, res) => {
       return options;
     })
     .then(data => res.success({ data }));
+});
+
+Router.post('/updateFromMessenger', (req, res) => {
+  if (!req.query || !req.query.messenger_user_id || !req.query.code || !req.query.schedule_name) {
+    return res.json({
+      messages: [
+        { text: 'Không đủ dữ liệu!' }
+      ]
+    });
+  }
+
+  let messenger_user_id = req.query.messenger_user_id;
+  let { code } = req.query;
+
+  scheduleModel.findOne({ hash: code })
+    .then(doc => {
+      if (!doc) {
+        return chatfuelController
+          .sendBroadcast(
+            process.env.BOT_ID, 
+            messenger_user_id, 
+            process.env.BROADCAST_TOKEN, 
+            process.env.UPDATE_SCHEDULE_BLOCK_NAME, 
+            { broadcast_text: 'Không tìm thấy lịch học. Vui lòng cập nhật lại code!' }
+          )
+          .then(data => res.json(data))
+          .catch(res.json);
+      }
+
+      return messengerUserModel.updateOne({ messenger_user_id }, {
+        messenger_user_id,
+        hash: code
+      }, { upsert: true })
+      .then(doc => {
+        return chatfuelController
+          .sendBroadcast(
+            process.env.BOT_ID, 
+            messenger_user_id, 
+            process.env.BROADCAST_TOKEN, 
+            process.env.UPDATE_SCHEDULE_BLOCK_NAME, 
+            { broadcast_text: `Cập nhật thành công. Tên lịch học: ${req.query.schedule_name}` }
+          );
+      })
+      .then(data => res.json(data))
+      .catch(res.json);
+    });
 });
 
 module.exports = Router;
