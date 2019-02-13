@@ -2,7 +2,8 @@ const Router = require('express').Router();
 const scheduleModel = require('../db/scheduleModel.js');
 const messengerUserModel = require('../db/messengerUserModel.js');
 const { generateTimeline, groupTimelineByDay } = require('tinchi-api');
-const moment = require('moment');
+var moment = require('moment-timezone');
+moment.tz.setDefault('Asia/Ho_Chi_Minh');
 const _ = require('lodash');
 
 Router.post('/update', (req, res) => {
