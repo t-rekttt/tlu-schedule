@@ -179,7 +179,7 @@ Router.get('/login_button', (req, res) => {
             template_type: 'generic',
             image_aspect_ratio: 'square',
             elements: [{
-              title: 'Mời bạn đăng nhập và chọn lịch học để cập nhật!',
+              title: 'Mời bạn nhấn "đăng nhập" và chọn lịch học, sau đó nhấn "Cập nhật" để thêm lịch học vào chatbot',
               subtitle: 'Choose your preferences',
               buttons:[
                 {
