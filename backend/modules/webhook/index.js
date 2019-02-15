@@ -176,21 +176,17 @@ Router.get('/login_button', (req, res) => {
         attachment: {
           type: 'template',
           payload: {
-            template_type: 'generic',
-            image_aspect_ratio: 'square',
-            elements: [{
-              title: 'Mời bạn nhấn "đăng nhập" và chọn lịch học, sau đó nhấn "Cập nhật" để thêm lịch học vào chatbot',
-              subtitle: 'Choose your preferences',
-              buttons:[
-                {
-                  type: 'web_url',
-                  url: 'https://tkb.thao.pw/login?messenger_user_id='+req.query['messenger user id'],
-                  title: 'Đăng nhập',
-                  messenger_extensions: true,
-                  webview_height_ratio: 'tall'
-                }
-              ]
-            }]
+            template_type: 'button',
+            text: 'Mời bạn nhấn "đăng nhập" và chọn lịch học, sau đó nhấn "Cập nhật" để thêm lịch học vào chatbot',
+            buttons:[
+              {
+                type: 'web_url',
+                url: 'https://tkb.thao.pw/login?messenger_user_id='+req.query['messenger user id'],
+                title: 'Đăng nhập',
+                messenger_extensions: true,
+                webview_height_ratio: 'tall'
+              }
+            ]
           }
         }
       }
