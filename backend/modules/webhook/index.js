@@ -60,7 +60,7 @@ Router.get('/tkb', (req, res) => {
     if (!doc) {
       return res.json({
         messages: [
-          {text: 'Vui lòng cập nhật lịch học trước khi tra cứu bằng cách sau:\n 1. Đăng nhập trên trang https://tkb.thao.pw\n 2. Chọn lịch của học kì bạn cần cập nhật\n 3. Copy code trên trang \n 4. Chọn "Nhập code" trên page và gửi code vừa copy\n\n Xem video hướng dẫn tại: https://fb.com/322255541956442/'}
+          {text: 'Hãy làm theo các bước sau để bắt đầu sử dụng:\n1. Bấm nút "Đăng nhập", một cửa sổ sẽ hiện lên để bạn điền thông tin\n2. Điền thông tin đăng nhập của bạn trên trang đăng ký học và nhấn "Đăng nhập"\n3. Chọn lịch của học kì bạn muốn thêm vào chatbot\n4. Nhấn "Thêm vào chatbot"'}
         ]
       });
     }
