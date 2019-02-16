@@ -173,9 +173,6 @@ Router.get('/login_options', (req, res) => {
   return res.json({
     messages:[
       {
-        text: 'Hãy chọn 1 trong 2 cách sau để bắt đầu sử dụng.'
-      },
-      {
         attachment: {
           type: 'template',
           payload: {
