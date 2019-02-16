@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cd ./backend && npm install && node index"
+    "start": "cd ./backend && npm install && node index & node cron"
   },
   "repository": {
     "type": "git",
