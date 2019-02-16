@@ -132,6 +132,7 @@ let sendSubscription = (date, start_period, end_period) => {
 
 db.once('open', () => {
   console.log('DB connected');
+  console.log('Starting cronjob');
 
   new CronJob('0 21 * * *', () => {
     console.log('Running 9pm cronjob');
