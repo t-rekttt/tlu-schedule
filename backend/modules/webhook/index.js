@@ -177,7 +177,7 @@ Router.get('/login_options', (req, res) => {
           type: 'template',
           payload: {
             template_type: 'button',
-            text: '1. Bấm nút "Đăng nhập", một cửa sổ sẽ hiện lên để bạn điền thông tin\n2. Điền thông tin đăng nhập của bạn trên trang đăng ký học và nhấn "Đăng nhập"\n3. Chọn lịch của học kì bạn muốn thêm vào chatbot\n4. Nhấn "Thêm vào chatbot"',
+            text: 'Hãy làm theo các bước sau để bắt đầu sử dụng:\n1. Bấm nút "Đăng nhập", một cửa sổ sẽ hiện lên để bạn điền thông tin\n2. Điền thông tin đăng nhập của bạn trên trang đăng ký học và nhấn "Đăng nhập"\n3. Chọn lịch của học kì bạn muốn thêm vào chatbot\n4. Nhấn "Thêm vào chatbot"',
             buttons:[
               {
                 type: 'web_url',
