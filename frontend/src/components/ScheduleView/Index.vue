@@ -24,16 +24,8 @@
         </b-form-group>
       </div>
       <div class="col-md-5" v-if="getQueryString().messenger_user_id">
-        <h5>Cập nhật TKB vào chatbot</h5>
-        <button class="btn btn-primary" @click="updateFromMessenger" v-show="data.code">Cập nhật</button>
-      </div>
-      <div class="col-md-5" v-else>
-        <h5>Code <small>(Paste vào chatbot để nhập TKB)</small></h5>
-        <div class="input-group">
-          <b-form-input type="text" :value="data.code" readonly id="code">
-          </b-form-input>
-          <button class="btn btn-primary" data-clipboard-target="#code">Copy</button>
-        </div>
+        <h5>Thêm lịch học vào chatbot</h5>
+        <button class="btn btn-primary" @click="updateFromMessenger" v-show="data.code">Thêm vào chatbot</button>
       </div>
     </div>
     <div class="schedule">

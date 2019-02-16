@@ -180,30 +180,14 @@ Router.get('/login_options', (req, res) => {
           type: 'template',
           payload: {
             template_type: 'button',
-            text: 'Cách 1:\n1. Bấm nút "Đăng nhập trực tiếp", một cửa sổ sẽ hiện lên để bạn điền thông tin\n2. Điền thông tin đăng nhập của bạn trên trang đăng ký học và nhấn "Đăng nhập"\n3. Chọn lịch của học kì bạn cần cập nhật\n4. Nhấn "Cập nhật"',
+            text: '1. Bấm nút "Đăng nhập", một cửa sổ sẽ hiện lên để bạn điền thông tin\n2. Điền thông tin đăng nhập của bạn trên trang đăng ký học và nhấn "Đăng nhập"\n3. Chọn lịch của học kì bạn muốn thêm vào chatbot\n4. Nhấn "Thêm vào chatbot"',
             buttons:[
               {
                 type: 'web_url',
                 url: 'https://tkb.thao.pw/login?messenger_user_id='+req.query['messenger user id'],
-                title: 'Đăng nhập trực tiếp',
+                title: 'Đăng nhập',
                 messenger_extensions: true,
                 webview_height_ratio: 'tall'
-              }
-            ]
-          }
-        }
-      },
-      {
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'button',
-            text: 'Cách 2:\n1. Đăng nhập trên trang https://tkb.thao.pw\n2. Chọn lịch của học kì bạn cần cập nhật\n3. Copy code trên trang\n4. Chọn "Nhập code" trên page và gửi code vừa copy\n\nXem video hướng dẫn tại: https://fb.com/322255541956442/',
-            buttons:[
-              {
-                type: 'show_block',
-                title: 'Nhập code',
-                block_names: ['Add code']
               }
             ]
           }
