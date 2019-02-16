@@ -90,7 +90,9 @@
             let selected = {};
 
             Object.keys(res.data).map(key => {
-              let default_value = res.data[key].filter(option => option.selected)[0];
+              let default_value = res.data[key].filter(option => option.value === '3405451fd482446a96baaae42060a689');
+              if (!default_value.length) default_value = res.data[key].filter(option => option.selected);
+              if (default_value.length) default_value = default_value[0];
 
               if (default_value) {
                 selected[key] = default_value.value;
