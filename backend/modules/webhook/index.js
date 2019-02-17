@@ -167,7 +167,7 @@ Router.get('/tkb', (req, res) => {
         });
       }
 
-      console.log(err);
+      console.log(err.message);
 
       return res.json({
         messages: [

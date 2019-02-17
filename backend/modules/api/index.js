@@ -24,7 +24,7 @@ Router.post('/login', (req, res) => {
           .then(data => res.success({data}))
       })
       .catch(err => {
-        console.log(err);
+        console.log(err.message);
         res.fail({data: err, message: err.message})
       });
   }
@@ -107,7 +107,7 @@ Router.get('/tkb', (req, res) => {
       });
     }
 
-    console.log(err);
+    console.log(err.message);
     return res.success({ 
       data: {
         schedule: [],
@@ -152,7 +152,7 @@ Router.post('/updateFromMessenger', (req, res) => {
           )
           .then(data => res.json(data))
           .catch(err => {
-            console.log(err);
+            console.log(err.message);
 
             return res.fail({ data: null, message: err.message });
           });
@@ -174,7 +174,7 @@ Router.post('/updateFromMessenger', (req, res) => {
       })
       .then(data => res.json(data))
       .catch(err => {
-        console.log(err);
+        console.log(err.message);
         
         return res.fail({ data: null, message: err.message });
       });
