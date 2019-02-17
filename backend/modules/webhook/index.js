@@ -60,7 +60,24 @@ Router.get('/tkb', (req, res) => {
     if (!doc) {
       return res.json({
         messages: [
-          {text: 'Hãy làm theo các bước sau để bắt đầu sử dụng:\n1. Bấm nút "Đăng nhập", một cửa sổ sẽ hiện lên để bạn điền thông tin\n2. Điền thông tin đăng nhập của bạn trên trang đăng ký học và nhấn "Đăng nhập"\n3. Chọn lịch của học kì bạn muốn thêm vào chatbot\n4. Nhấn "Thêm vào chatbot"'}
+          {
+            attachment: {
+              type: 'template',
+              payload: {
+                template_type: 'button',
+                text: 'Hãy làm theo các bước sau để bắt đầu sử dụng:\n1. Bấm nút "Đăng nhập", một cửa sổ sẽ hiện lên để bạn điền thông tin\n2. Điền thông tin đăng nhập của bạn trên trang đăng ký học và nhấn "Đăng nhập"\n3. Chọn lịch của học kì bạn muốn thêm vào chatbot\n4. Nhấn "Thêm vào chatbot"',
+                buttons:[
+                  {
+                    type: 'web_url',
+                    url: 'https://tkb.thao.pw/login?messenger_user_id='+req.query['messenger user id'],
+                    title: 'Đăng nhập',
+                    messenger_extensions: true,
+                    webview_height_ratio: 'tall'
+                  }
+                ]
+              }
+            }
+          }
         ]
       });
     }
