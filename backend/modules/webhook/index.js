@@ -123,7 +123,7 @@ Router.get('/tkb', (req, res) => {
           })
         });
       } else if (req.query.next7days) {
-        timeline = timeline.filter(day => day.day.isBetween(moment(), moment().add('1', 'week')));
+        timeline = timeline.filter(day => day.day.isBetween(moment(), moment().add('1', 'week'), null, '[]'));
 
         var messages = [];
         if (!timeline || !timeline.length) {
