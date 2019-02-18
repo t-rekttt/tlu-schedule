@@ -209,7 +209,7 @@ Router.get('/login_options', (req, res) => {
 });
 
 Router.post('/subscribe', (req, res) => {
-  if (!req.query || !req.query['messenger user id']) {
+  if (!req.body || !req.body['messenger user id']) {
     return res.json({
       messages: [
         {text: 'Không đủ dữ liệu!'}
@@ -217,7 +217,7 @@ Router.post('/subscribe', (req, res) => {
     });
   }
 
-  let messenger_user_id = req.query['messenger user id'];
+  let messenger_user_id = req.body['messenger user id'];
   return messengerUserModel.updateOne({
     messenger_user_id
   }, {
