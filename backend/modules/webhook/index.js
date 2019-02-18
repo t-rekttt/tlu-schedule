@@ -226,9 +226,18 @@ Router.post('/subscribe', (req, res) => {
     }
   })
   .then(() => {
-    res.json({
+    return res.json({
       messages:[
         { 'text': 'Bật tính năng nhắc lịch học thành công!' }
+      ]
+    });
+  })
+  .catch(err => {
+    console.log(err);
+
+    return res.json({
+      messages:[
+        { 'text': 'Đã có lỗi xảy ra, hãy báo với admin để được xử lý!' }
       ]
     });
   });
