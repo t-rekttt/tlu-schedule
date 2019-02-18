@@ -92,11 +92,8 @@ Router.get('/tkb', (req, res) => {
         throw 'Không tìm thấy lịch học';
       }
 
-      return doc.schedule;
-    })
-    .then(generateTimeline)
-    .then(groupTimelineByDay)
-    .then(timeline => {
+      let timeline = groupTimelineByDay(generateTimeline(doc.schedule));
+
       if (req.query.today) {
         timeline = timeline.filter(day => day.today)[0];
 
@@ -104,7 +101,7 @@ Router.get('/tkb', (req, res) => {
         if (!timeline) {
           messages.push('Bạn không có lịch môn nào hôm nay!');
         } else {
-          messages.push('Hôm nay bạn có các môn:\n');
+          messages.push(`[${doc.ma_sv}] Hôm nay bạn có các môn:\n`);
 
           timeline.subjects.map(subject => {
             let location = (subject.locations && subject.locations[subject.phase]) ? subject.locations[subject.phase].location : subject.dia_diem;
@@ -129,7 +126,7 @@ Router.get('/tkb', (req, res) => {
         if (!timeline || !timeline.length) {
           messages.push('Bạn không có lịch môn nào trong vòng 7 ngày tới!');
         } else {
-          messages.push('7 ngày tới bạn có lịch các môn:\n');
+          messages.push(`[${doc.ma_sv}] 7 ngày tới bạn có lịch các môn:\n`);
 
           timeline.map(day => {
             let timestamp = day.day.format('dddd, [ngày] D [tháng] M [năm] YYYY');
@@ -208,6 +205,32 @@ Router.get('/login_options', (req, res) => {
         }
       }
     ]
+  });
+});
+
+Router.post('/subscribe', (req, res) => {
+  if (!req.query || !req.query['messenger user id']) {
+    return res.json({
+      messages: [
+        {text: 'Không đủ dữ liệu!'}
+      ]
+    });
+  }
+
+  let messenger_user_id = req.query['messenger user id'];
+  return messengerUserModel.updateOne({
+    messenger_user_id
+  }, {
+    $set: {
+      subscription: true
+    }
+  })
+  .then(() => {
+    res.json({
+      messages:[
+        { 'text': 'Bật tính năng nhắc lịch học thành công!' }
+      ]
+    });
   });
 });
 
