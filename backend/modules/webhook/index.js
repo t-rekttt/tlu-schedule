@@ -228,7 +228,7 @@ Router.post('/subscribe', (req, res) => {
   .then(() => {
     return res.json({
       messages:[
-        { 'text': 'Bật tính năng nhắc lịch học thành công!' }
+        { 'text': 'Bật tính năng nhắc lịch học thành công! \nLịch học các tiết buổi sáng sẽ được thông báo cho bạn vào 21h tối hôm trước. \nLịch học các tiết buổi chiều sẽ được thông báo vào 8h sáng hôm sau!' }
       ]
     });
   })
