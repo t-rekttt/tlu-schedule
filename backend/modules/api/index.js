@@ -147,7 +147,7 @@ Router.post('/updateFromMessenger', (req, res) => {
             process.env.BOT_ID, 
             messenger_user_id, 
             process.env.BROADCAST_TOKEN, 
-            process.env.UPDATE_SCHEDULE_BLOCK_NAME, 
+            process.env.CANT_FIND_SCHEDULE_BLOCK_NAME, 
             { broadcast_text: 'Không tìm thấy lịch học. Vui lòng cập nhật lại code!' }
           )
           .then(data => res.json(data))
