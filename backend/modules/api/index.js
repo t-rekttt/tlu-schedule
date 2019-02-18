@@ -11,22 +11,41 @@ Router.post('/login', (req, res) => {
   if (req.body.ma_sv && req.body.password) {
     let { ma_sv, password } = req.body;
 
-    tinchi
-      .init()
-      .then(jar => {
-        req.session.jar = jar;
-        req.session.info = {
-          ma_sv
-        };
+    Promise.race([
+      tinchi
+        .init()
+        .then(jar => {
+          req.session.jar = jar;
+          req.session.info = {
+            ma_sv,
+            passwordHash: md5(password)
+          };
 
-        return tinchi
-          .login(ma_sv, password, {jar})
-          .then(data => res.success({data}))
-      })
-      .catch(err => {
-        console.log(err.message);
-        res.fail({data: err, message: err.message})
-      });
+          return tinchi
+            .login(ma_sv, password, {jar})
+            .then(data => res.success({data}))
+        })
+        .catch(err => {
+          console.log(err.message);
+          res.fail({data: err, message: err.message})
+        }),
+      // scheduleModel.findOne({
+      //   ma_sv,
+      //   passwordHash: md5(password)
+      // })
+      // .then(doc => {
+      //   return new Promise(resolve => {
+      //     if (doc) {
+      //       req.session.info = {
+      //         ma_sv: doc.ma_sv,
+      //         passwordHash: doc.passwordHash 
+      //       };
+
+      //       resolve(doc);
+      //     }
+      //   });
+      // })
+    ]);
   }
 })
 
@@ -54,7 +73,8 @@ Router.get('/tkb', (req, res) => {
         ...query,
         code: hash,
         hash,
-        schedule: data
+        schedule: data,
+        passwordHash: req.session.info.passwordHash
       }
     });
 
