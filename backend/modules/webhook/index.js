@@ -237,7 +237,7 @@ Router.post('/subscribe', (req, res) => {
 
     return res.json({
       messages:[
-        { 'text': 'Đã có lỗi xảy ra, hãy báo với admin để được xử lý!' }
+        { 'text': 'Đã có lỗi xảy ra, hãy báo với admin để được hỗ trợ!' }
       ]
     });
   });
