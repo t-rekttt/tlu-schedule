@@ -23,7 +23,7 @@ Router.post('/update', (req, res) => {
       if (!doc) {
         return res.json({
           messages: [
-            {text: 'Không tìm thấy lịch học. Vui lòng cập nhật lại code!'}
+            {text: 'Không tìm thấy lịch học. Vui lòng thử cập nhật lại hoặc thử lại sau'}
           ]
         });
       }
