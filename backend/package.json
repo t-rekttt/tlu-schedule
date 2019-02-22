@@ -14,7 +14,7 @@
     "lodash": "^4.17.11",
     "md5": "^2.2.1",
     "mongoose": "^5.3.8",
-    "tinchi-api": "git+https://github.com/t-rekttt/tinchi-api.git"
+    "tinchi-api": "^1.0.2"
   },
   "devDependencies": {},
   "scripts": {
