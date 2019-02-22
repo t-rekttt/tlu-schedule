@@ -6,7 +6,7 @@ const { generateTimeline, groupTimelineByDay } = require('tinchi-api');
 const period_board = require('./period_board.js');
 const chatfuelController = require('./modules/chatfuel/chatfuelController.js');
 const _ = require('lodash');
-
+const async = require('async');
 var moment = require('moment-timezone');
 moment.tz.setDefault('Asia/Ho_Chi_Minh');
 
@@ -108,8 +108,9 @@ let sendSubscription = (date, start_period, end_period) => {
       users.map(user => {
         let message_data = createMessageData(user.schedule);
 
-        return Promise.all(
-          message_data.map(message => {
+        return async.mapSeries(
+          message_data,
+          (message, cb) => {
             chatfuelController.sendBroadcast(
               process.env.BOT_ID, 
               user.messenger_user_id, 
@@ -117,15 +118,22 @@ let sendSubscription = (date, start_period, end_period) => {
               process.env.UPDATE_SCHEDULE_BLOCK_NAME, 
               { broadcast_text: message }
             )
-          }
-        ))
-        .catch(err => console.log(err));
-      });
+            .then(() => {
+              console.log('Subscription sent to ' + user.messenger_user_id);
+              cb()
+            })
+            .catch(err => {
+              console.log(err);
+              cb();
+            });
+          },
+          (err, data) => {
+            if (err) console.log(err);
 
-      return users;
-    })
-    .then(data => {
-      console.log('Subscription sent to '+data.length+' users');
+            console.log('Subscription sent to '+data.length+' users');
+          }
+        )
+      });
     })
     .catch(err => console.log(err));
 }
