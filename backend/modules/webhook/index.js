@@ -333,6 +333,115 @@ Router.get('/studentMark', (req, res) => {
     });
 });
 
+Router.get('/examSchedule', (req, res) => {
+  if (!req.query || !req.query['messenger user id']) {
+      return res.json({
+        messages: [
+          {text: 'Không đủ dữ liệu!'}
+        ]
+      });
+    }
+
+    let messenger_user_id = req.query['messenger user id'];
+    
+    return messengerUserModel
+      .aggregate([
+        {$match: { messenger_user_id }},
+        {
+          $lookup: {
+            from: 'schedules',
+            localField: 'hash',
+            foreignField: 'hash',
+            as: 'passwordHash'
+          }
+        },
+        {$unwind: '$passwordHash'},
+        {$addFields: { 
+          'ma_sv': '$passwordHash.ma_sv',
+          'passwordHash': '$passwordHash.passwordHash' }
+        }
+      ])
+      .then(doc => {
+        if (!doc || !doc.length) {
+          return res.json({
+            messages:[
+              { 'text': 'Vui lòng cập nhật lịch học trước khi tra cứu điểm để hệ thống có thể liên kết tài khoản của bạn với trang đăng ký học' }
+            ]
+          });
+        }
+
+        doc = doc[0];
+
+        let loginPromise = tinchi.login(doc.ma_sv, doc.passwordHash, { shouldNotEncrypt: true });
+
+        if (!req.query.examScheduleDrpSemester) {
+          loginPromise
+            .then(() => tinchi.getExamList())
+            .then(({ data, options }) => {
+              let optionsDrpHK = options.drpSemester
+                .filter(option => option.value && option.value.length)
+                .filter(option => {
+                  let year = parseInt(option.text.split('_').reverse()[0]);
+                  return new Date().getFullYear() >= (year - 1);
+                });
+
+              optionsDrpHK = optionsDrpHK.slice(0, 11);
+
+              return res.json({
+                messages: [
+                  { 
+                    text: 'Chọn học kì bạn cần tra cứu lịch thi',
+                    quick_replies: optionsDrpHK.map(option => {
+                      return {
+                        title: option.text,
+                        set_attributes: {
+                          examScheduleDrpSemester: option.value,
+                          examScheduleDrpSemesterName: option.text
+                        },
+                        block_names: ['Get exam schedule']
+                      }
+                    })
+                  }
+                ]
+              });
+            });
+        } else {
+          let drpSemester = req.query.examScheduleDrpSemester;
+          let drpSemesterName = req.query.examScheduleDrpSemesterName;
+
+          return loginPromise
+            .then(() => tinchi.getExamList({ drpSemester, drpDotThi: '', drpExaminationNumber: 0 }))
+            .then(({ data, options }) => data)
+            .then(tinchi.parseExamList)
+            .then(data => {
+              let examScheduleMessage = data.map(subject => {
+                return { text: `${subject.ten_hoc_phan} (${subject.ma_hoc_phan}): \nSố tín chỉ: ${subject.so_tin_chi}\nNgày thi: ${subject.ngay_thi}\nCa thi: ${subject.ca_thi}\nHình thức thi: ${subject.hinh_thuc_thi}\nSố báo danh: ${subject.so_bao_danh}\nPhòng thi: ${subject.phong_thi}\nGhi chú: ${subject.ghi_chu}` };
+              });
+
+              if (!data || !data.length) {
+                return res.json({
+                messages: [
+                  {
+                    text: `[${doc.ma_sv}] Bạn chưa có lịch thi của học kì này!`
+                  },
+                  ...examScheduleMessage
+                ]
+              });
+              }
+
+              return res.json({
+                messages: [
+                  {
+                    text: `[${doc.ma_sv}] Lịch thi của bạn trong học kì ${drpSemesterName}: `
+                  },
+                  ...examScheduleMessage
+                ]
+              });
+            });
+        }
+      });
+});
+
 Router.post('*', (req, res) => {
   console.log(req.body);
   res.send('ok');
