@@ -84,7 +84,8 @@ Router.get('/tkb', (req, res) => {
       return new Promise(resolve => {
         if (doc) resolve({
           type: 'database',
-          ...doc
+          ...doc,
+          code: hash
         });
 
         return scheduleModel.findOne({ ma_sv })
