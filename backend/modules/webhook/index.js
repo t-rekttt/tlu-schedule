@@ -299,10 +299,10 @@ Router.get('/studentMark', (req, res) => {
                       title: option.text,
                       set_attributes: {
                         drpHK: option.value
-                      }
+                      },
+                      block_names: ['Get student mark']
                     }
-                  }),
-                  block_names: ['Get student mark']
+                  })
                 }
               ]
             });
