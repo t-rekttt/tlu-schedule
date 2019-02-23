@@ -30,34 +30,29 @@ Router.post('/login', (req, res) => {
           }
 
           return tinchi
-            .init()
-            .then(jar => {
-              return tinchi
-                .login(ma_sv, password, { jar })
-                .then(data => {
-                  req.session.jar = jar;
-                  req.session.info = {
-                    ma_sv,
-                    passwordHash: md5(password)
-                  };
+            .login(ma_sv, password)
+            .then(data => {
+              req.session.info = {
+                ma_sv,
+                passwordHash: md5(password)
+              };
+              req.session.loggedIn = true;
 
-                  scheduleModel
-                    .update(
-                      { ma_sv }, 
-                      { 
-                        $set: {
-                          passwordHash: md5(password)
-                        }
-                      },
-                      { upsert: true }
-                    )
-                    .then(() => console.log('Updated passwordHash for '+ma_sv));
+              scheduleModel
+                .update(
+                  { ma_sv }, 
+                  { 
+                    $set: {
+                      passwordHash: md5(password)
+                    }
+                  },
+                  { upsert: true }
+                )
+                .then(() => console.log('Updated passwordHash for '+ma_sv));
 
-                  req.session.loggedIn = true;
-                  res.success({ data });
+              res.success({ data });
 
-                  resolve();
-                });
+              resolve();
             });
         });
       })
@@ -96,24 +91,20 @@ Router.get('/tkb', (req, res) => {
           .then(doc1 => {
             let { passwordHash } = doc1;
 
-            return tinchi
-              .init()
-              .then(jar => {
-                return tinchi.login(ma_sv, passwordHash, { jar, shouldNotEncrypt: true })
-                  .then(() => tinchi.getTkb(query))
-                  .then(({ data, options }) => data)
-                  .then(tinchi.parseTkb)
-                  .then(data => {
-                    resolve({
-                      type: 'parser',
-                      ma_sv,
-                      ...query,
-                      code: hash,
-                      hash,
-                      schedule: data,
-                      passwordHash: req.session.info.passwordHash
-                    });
-                  });
+            return tinchi.login(ma_sv, passwordHash, { jar, shouldNotEncrypt: true })
+              .then(() => tinchi.getTkb(query))
+              .then(({ data, options }) => data)
+              .then(tinchi.parseTkb)
+              .then(data => {
+                resolve({
+                  type: 'parser',
+                  ma_sv,
+                  ...query,
+                  code: hash,
+                  hash,
+                  schedule: data,
+                  passwordHash: req.session.info.passwordHash
+                });
               });
           });
       });
@@ -130,7 +121,6 @@ Router.get('/tkb', (req, res) => {
     timeout
   ])
   .then(data => {
-
     if (data.type === 'parser') {
       scheduleModel
         .update(
