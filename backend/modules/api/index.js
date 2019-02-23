@@ -82,7 +82,7 @@ Router.get('/tkb', (req, res) => {
   let { ma_sv } = req.session.info;
   let hash = md5(ma_sv+(query.drpSemester || ''));
 
-  scheduleModel.findOne({ hash })
+  let tkbPromise = scheduleModel.findOne({ hash })
     .lean()
     .exec()
     .then(doc => {
@@ -98,20 +98,22 @@ Router.get('/tkb', (req, res) => {
 
             return tinchi
               .init()
-              .then(jar => login(ma_sv, password, { jar }))
-              .getTkb(query, { jar })
-              .then(({ data, options }) => data)
-              .then(tinchi.parseTkb)
-              .then(data => {
-                return {
-                  type: 'parser',
-                  ma_sv,
-                  ...query,
-                  code: hash,
-                  hash,
-                  schedule: data,
-                  passwordHash: req.session.info.passwordHash
-                }
+              .then(jar => {
+                return tinchi.login(ma_sv, passwordHash, { jar, shouldNotEncrypt: true })
+                  .then(() => tinchi.getTkb(query))
+                  .then(({ data, options }) => data)
+                  .then(tinchi.parseTkb)
+                  .then(data => {
+                    resolve({
+                      type: 'parser',
+                      ma_sv,
+                      ...query,
+                      code: hash,
+                      hash,
+                      schedule: data,
+                      passwordHash: req.session.info.passwordHash
+                    });
+                  });
               });
           });
       });
@@ -120,12 +122,11 @@ Router.get('/tkb', (req, res) => {
   let timeout = new Promise((resolve, reject) => {
     setTimeout(() => {
       reject('timeout');
-    }, 10000);
+    }, 20000);
   });
 
   Promise.race([
-    tkbParsePromise,
-    tkbDbPromise,
+    tkbPromise,
     timeout
   ])
   .then(data => {
@@ -134,7 +135,7 @@ Router.get('/tkb', (req, res) => {
       scheduleModel
         .update(
           { hash }, 
-          { $set: ...data },
+          { $set: data },
           { upsert: true }
         )
         .then(() => console.log('Updated schedule for '+ma_sv))
