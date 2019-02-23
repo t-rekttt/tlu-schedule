@@ -11,46 +11,66 @@ Router.post('/login', (req, res) => {
   if (req.body.ma_sv && req.body.password) {
     let { ma_sv, password } = req.body;
 
-    Promise.race([
-      tinchi
-        .init()
-        .then(jar => {
-          req.session.jar = jar;
-          req.session.info = {
-            ma_sv,
-            passwordHash: md5(password)
-          };
+    let scheduleModelQueryPromise = scheduleModel.findOne({
+      ma_sv,
+      passwordHash: md5(password)
+    })
 
-          return tinchi
-            .login(ma_sv, password, {jar})
-            .then(data => res.success({data}))
-        })
-        .catch(err => {
-          console.log(err.message);
-          res.fail({data: err, message: err.message})
-        }),
-      // scheduleModel.findOne({
-      //   ma_sv,
-      //   passwordHash: md5(password)
-      // })
-      // .then(doc => {
-      //   return new Promise(resolve => {
-      //     if (doc) {
-      //       req.session.info = {
-      //         ma_sv: doc.ma_sv,
-      //         passwordHash: doc.passwordHash 
-      //       };
+    scheduleModelQueryPromise
+      .then(doc => {
+        return new Promise(resolve => {
+          if (doc) {
+            req.session.loggedIn = true;
+            req.session.info = {
+              ma_sv: doc.ma_sv,
+              passwordHash: doc.passwordHash 
+            };
 
-      //       resolve(doc);
-      //     }
-      //   });
-      // })
-    ]);
+            resolve();
+          }
+
+          tinchi
+            .init()
+            .then(jar => {
+              req.session.jar = jar;
+              req.session.info = {
+                ma_sv,
+                passwordHash: md5(password)
+              };
+
+
+              return tinchi
+                .login(ma_sv, password, { jar })
+                .then(data => {
+                  scheduleModel
+                    .update(
+                      { ma_sv }, 
+                      { 
+                        $set: {
+                          passwordHash: md5(password)
+                        }
+                      },
+                      { upsert: true }
+                    )
+                    .then(() => console.log('Updated passwordHash for '+ma_sv));
+
+                  req.session.loggedIn = true;
+                  res.success({ data });
+
+                  resolve();
+                });
+            });
+        });
+      })
+      .catch(err => {
+        console.log(err.message);
+        res.fail({data: err, message: err.message})
+      });
   }
 })
 
 Router.use((req, res, next) => {
-  if (!req.session.jar) {
+  if (!req.session.loggedIn) {
     return res.fail({ message: 'Not logged in' });
   }
 
@@ -106,14 +126,13 @@ Router.get('/tkb', (req, res) => {
     if (data.type === 'parser') {
       scheduleModel
         .update(
-          { ma_sv }, 
-          data,
+          { hash }, 
+          { $set: ...data },
           { upsert: true }
         )
+        .then(() => console.log('Updated schedule for '+ma_sv))
         .catch(console.log);
     }
-
-    delete data.type;
 
     return res.success({ data });
   })
