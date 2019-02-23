@@ -104,6 +104,7 @@ Router.get('/tkb', (req, res) => {
         } else {
           messages.push(`[${doc.ma_sv}] Hôm nay bạn có các môn:\n`);
 
+          timeline.subjects = timeline.subjects.filter(subject => subject.timestamp.end.isSameOrAfter(moment()));
           timeline.subjects.map(subject => {
             let location = (subject.locations && subject.locations[subject.phase]) ? subject.locations[subject.phase].location : subject.dia_diem;
             let time_range = `${ subject.timestamp.start.format('H[h]mm') }-${ subject.timestamp.end.format('H[h]mm') }`;
