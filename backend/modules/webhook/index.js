@@ -5,6 +5,7 @@ const { generateTimeline, groupTimelineByDay } = require('tinchi-api');
 var moment = require('moment-timezone');
 moment.tz.setDefault('Asia/Ho_Chi_Minh');
 const _ = require('lodash');
+const tinchi = require('tinchi-api');
 
 Router.post('/update', (req, res) => {
   if (!req.body || !req.body['messenger user id'] || !req.body.code) {
@@ -241,6 +242,95 @@ Router.post('/subscribe', (req, res) => {
       ]
     });
   });
+});
+
+Router.get('/studentMark', (req, res) => {
+  if (!req.query || !req.query['messenger user id']) {
+    return res.json({
+      messages: [
+        {text: 'Không đủ dữ liệu!'}
+      ]
+    });
+  }
+
+  let messenger_user_id = req.query['messenger user id'];
+  
+  return messengerUserModel
+    .aggregate([
+      {$match: { messenger_user_id }},
+      {
+        $lookup: {
+          from: 'schedules',
+          localField: 'hash',
+          foreignField: 'hash',
+          as: 'passwordHash'
+        }
+      },
+      {$unwind: '$passwordHash'},
+      {$addFields: { 
+        'ma_sv': '$passwordHash.ma_sv',
+        'passwordHash': '$passwordHash.passwordHash' }
+      }
+    ])
+    .then(doc => {
+      if (!doc || !doc.length) {
+        return res.json({
+          messages:[
+            { 'text': 'Vui lòng cập nhật lịch học trước khi tra cứu điểm để hệ thống có thể liên kết tài khoản của bạn với trang đăng ký học' }
+          ]
+        });
+      }
+
+      doc = doc[0];
+
+      let loginPromise = tinchi.login(doc.ma_sv, doc.passwordHash, { shouldNotEncrypt: true });
+      if (!req.query.drpHK) {
+        loginPromise
+          .then(() => tinchi.getStudentMark())
+          .then(({ data, options }) => {
+            let optionsDrpHK = options.drpHK.filter(option => option.value && option.value.length)
+
+            return res.json({
+              messages: [
+                { 
+                  text: 'Chọn học kì bạn cần tra cứu điểm',
+                  quick_replies: optionsDrpHK.map(option => {
+                    return {
+                      title: option.text,
+                      set_attributes: {
+                        drpHK: option.value
+                      }
+                    }
+                  }),
+                  block_names: ['Get student mark']
+                }
+              ]
+            });
+          });
+      } else {
+        let { drpHK } = req.query;
+        
+        loginPromise
+          .then(() => tinchi.getStudentMark({ drpHK }))
+          .then(({ data, options }) => data)
+          .then(tinchi.parseStudentMark)
+          .then(data => {
+            let markMessage = data.map(subject => {
+              return `${subject.ten_hoc_phan} (${subject.ma_hoc_phan}): \nSố tín chỉ: ${subject.so_tin_chi}\nQuá trình: ${subject.qua_trinh}\nThi: ${subject.thi}\nTKHP: ${subject.tkhp}\nĐiểm chữ: ${subject.diem_chu}`;
+            });
+
+            return res.json({
+              messages: [
+                {
+                  text: `[${doc.ma_sv}] Các điểm của bạn trong học kì ${drpHK}: `
+                },
+                ...markMessage
+              ]
+            });
+          });
+      }
+        
+    });
 });
 
 Router.post('*', (req, res) => {
