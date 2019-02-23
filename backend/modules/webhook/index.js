@@ -309,8 +309,8 @@ Router.get('/studentMark', (req, res) => {
           });
       } else {
         let { drpHK } = req.query;
-        
-        loginPromise
+
+        return loginPromise
           .then(() => tinchi.getStudentMark({ drpHK }))
           .then(({ data, options }) => data)
           .then(tinchi.parseStudentMark)
@@ -319,6 +319,7 @@ Router.get('/studentMark', (req, res) => {
               return `${subject.ten_hoc_phan} (${subject.ma_hoc_phan}): \nSố tín chỉ: ${subject.so_tin_chi}\nQuá trình: ${subject.qua_trinh}\nThi: ${subject.thi}\nTKHP: ${subject.tkhp}\nĐiểm chữ: ${subject.diem_chu}`;
             });
 
+            console.log(data);
             return res.json({
               messages: [
                 {
@@ -329,7 +330,6 @@ Router.get('/studentMark', (req, res) => {
             });
           });
       }
-        
     });
 });
 
