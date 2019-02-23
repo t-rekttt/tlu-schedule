@@ -93,7 +93,7 @@ Router.get('/tkb', (req, res) => {
   let timeout = new Promise((resolve, reject) => {
     setTimeout(() => {
       reject('timeout');
-    }, 5000);
+    }, 10000);
   });
 
   Promise.race([
