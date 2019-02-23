@@ -316,10 +316,9 @@ Router.get('/studentMark', (req, res) => {
           .then(tinchi.parseStudentMark)
           .then(data => {
             let markMessage = data.map(subject => {
-              return `${subject.ten_hoc_phan} (${subject.ma_hoc_phan}): \nSố tín chỉ: ${subject.so_tin_chi}\nQuá trình: ${subject.qua_trinh}\nThi: ${subject.thi}\nTKHP: ${subject.tkhp}\nĐiểm chữ: ${subject.diem_chu}`;
+              return { text: `${subject.ten_hoc_phan} (${subject.ma_hoc_phan}): \nSố tín chỉ: ${subject.so_tin_chi}\nQuá trình: ${subject.qua_trinh}\nThi: ${subject.thi}\nTKHP: ${subject.tkhp}\nĐiểm chữ: ${subject.diem_chu}` };
             });
 
-            console.log(data);
             return res.json({
               messages: [
                 {
