@@ -29,19 +29,18 @@ Router.post('/login', (req, res) => {
             resolve();
           }
 
-          tinchi
+          return tinchi
             .init()
             .then(jar => {
-              req.session.jar = jar;
-              req.session.info = {
-                ma_sv,
-                passwordHash: md5(password)
-              };
-
-
               return tinchi
                 .login(ma_sv, password, { jar })
                 .then(data => {
+                  req.session.jar = jar;
+                  req.session.info = {
+                    ma_sv,
+                    passwordHash: md5(password)
+                  };
+
                   scheduleModel
                     .update(
                       { ma_sv }, 
@@ -83,22 +82,7 @@ Router.get('/tkb', (req, res) => {
   let { ma_sv } = req.session.info;
   let hash = md5(ma_sv+(query.drpSemester || ''));
 
-  let tkbParsePromise = tinchi.getTkb(query, {jar})
-    .then(({ data, options }) => data)
-    .then(tinchi.parseTkb)
-    .then(data => {
-      return {
-        type: 'parser',
-        ma_sv,
-        ...query,
-        code: hash,
-        hash,
-        schedule: data,
-        passwordHash: req.session.info.passwordHash
-      }
-    });
-
-  let tkbDbPromise = scheduleModel.findOne({ ma_sv, drpSemester: query.drpSemester })
+  scheduleModel.findOne({ hash })
     .lean()
     .exec()
     .then(doc => {
@@ -107,6 +91,29 @@ Router.get('/tkb', (req, res) => {
           type: 'database',
           ...doc
         });
+
+        return scheduleModel.findOne({ ma_sv })
+          .then(doc1 => {
+            let { passwordHash } = doc1;
+
+            return tinchi
+              .init()
+              .then(jar => login(ma_sv, password, { jar }))
+              .getTkb(query, { jar })
+              .then(({ data, options }) => data)
+              .then(tinchi.parseTkb)
+              .then(data => {
+                return {
+                  type: 'parser',
+                  ma_sv,
+                  ...query,
+                  code: hash,
+                  hash,
+                  schedule: data,
+                  passwordHash: req.session.info.passwordHash
+                }
+              });
+          });
       });
     });
 
