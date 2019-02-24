@@ -411,7 +411,11 @@ Router.get('/examSchedule', (req, res) => {
 
           return loginPromise
             .then(() => tinchi.getExamList({ drpSemester }))
-            .then(({ data, options, initialFormData }) => tinchi.getExamList({ drpSemester, drpDotThi: '', drpExaminationNumber: 0, __VIEWSTATE: initialFormData.__VIEWSTATE, __EVENTVALIDATION: initialFormData.__EVENTVALIDATION }))
+            .then(({ data, options, initialFormData }) => {
+              delete initialFormData.btnList;
+              delete initialFormData.btnPrint;
+              return tinchi.getExamList({ drpSemester, drpDotThi: '', drpExaminationNumber: 0 }, {}, initialFormData)
+            })
             .then(({ data, options }) => data)
             .then(tinchi.parseExamList)
             .then(data => {
