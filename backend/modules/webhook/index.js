@@ -410,7 +410,8 @@ Router.get('/examSchedule', (req, res) => {
           let drpSemesterName = req.query.examScheduleDrpSemesterName;
 
           return loginPromise
-            .then(() => tinchi.getExamList({ drpSemester, drpDotThi: '', drpExaminationNumber: 0 }))
+            .then(() => tinchi.getExamList({ drpSemester }))
+            .then(({ data, options, initialFormData }) => tinchi.getExamList({ drpSemester, drpDotThi: '', drpExaminationNumber: 0, __VIEWSTATE: initialFormData.__VIEWSTATE, __EVENTVALIDATION: initialFormData.__EVENTVALIDATION }))
             .then(({ data, options }) => data)
             .then(tinchi.parseExamList)
             .then(data => {
