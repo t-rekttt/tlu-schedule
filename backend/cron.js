@@ -19,6 +19,11 @@ let getDataBetweenPeriods = (date, start_period, end_period) => {
   return scheduleModel
     .aggregate([
       {
+        $match: {
+          schedule: {$ne: null}
+        }
+      },
+      {
         $addFields: {
           size: {$size: '$schedule'}
         }
