@@ -125,11 +125,11 @@ let sendSubscription = (date, start_period, end_period) => {
             )
             .then(() => {
               console.log('Subscription sent to ' + user.messenger_user_id);
-              cb()
+              setTimeout(() => cb(), 2000);
             })
             .catch(err => {
               console.log(err);
-              cb();
+              setTimeout(() => cb(), 2000);
             });
           },
           (err, data) => {
