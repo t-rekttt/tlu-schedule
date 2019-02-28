@@ -83,9 +83,7 @@ let getDataBetweenPeriods = (date, start_period, end_period) => {
 }
 
 let createMessageData = (timeline) => {
-  let messages = [];
-
-  messages.push('NHẮC LỊCH HỌC!!! LỊCH HỌC SẮP TỚI CỦA BẠN: ');
+  let messages = 'NHẮC LỊCH HỌC!!! LỊCH HỌC SẮP TỚI CỦA BẠN: \n';
 
   timeline.map(day => {
     let timestamp = day.day.format('dddd, [ngày] D [tháng] M [năm] YYYY');
@@ -100,7 +98,7 @@ let createMessageData = (timeline) => {
       message += `${name}\nThời gian: ${time_range}\nĐịa điểm: ${location}\n\n`;
     });
 
-    messages.push(message);
+    messages += message + '\n';
   });
 
   return messages;
@@ -110,34 +108,24 @@ let sendSubscription = (date, start_period, end_period) => {
   return getDataBetweenPeriods(date, start_period, end_period)
     .then(users => {
       // users = users.filter(user => user.ma_sv === '1851160076');
-      users.map(user => {
-        let message_data = createMessageData(user.schedule);
+      async.mapSeries(users, (user, cb) => {
+        let message = createMessageData(user.schedule);
 
-        return async.mapSeries(
-          message_data,
-          (message, cb) => {
-            chatfuelController.sendBroadcast(
-              process.env.BOT_ID, 
-              user.messenger_user_id, 
-              process.env.BROADCAST_TOKEN, 
-              process.env.UPDATE_SCHEDULE_BLOCK_NAME, 
-              { broadcast_text: message }
-            )
-            .then(() => {
-              console.log('Subscription sent to ' + user.messenger_user_id);
-              setTimeout(() => cb(), 2000);
-            })
-            .catch(err => {
-              console.log(err);
-              setTimeout(() => cb(), 2000);
-            });
-          },
-          (err, data) => {
-            if (err) console.log(err);
-
-            console.log('Subscription sent to '+data.length+' users');
-          }
+        chatfuelController.sendBroadcast(
+          process.env.BOT_ID, 
+          user.messenger_user_id, 
+          process.env.BROADCAST_TOKEN, 
+          process.env.UPDATE_SCHEDULE_BLOCK_NAME, 
+          { broadcast_text: message }
         )
+        .then(() => {
+          console.log('Subscription sent to ' + user.messenger_user_id);
+          setTimeout(() => cb(), 2000);
+        })
+        .catch(err => {
+          console.log(err);
+          setTimeout(() => cb(), 2000);
+        });
       });
     })
     .catch(err => console.log(err));
