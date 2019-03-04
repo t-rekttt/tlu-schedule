@@ -4,6 +4,7 @@ const scheduleModel = require('../db/scheduleModel.js');
 const chatfuelController = require('../chatfuel/chatfuelController.js');
 const messengerUserModel = require('../db/messengerUserModel.js');
 const md5 = require('md5');
+const request = require('request');
 
 Router.post('/login', (req, res) => {
   if (!req.body) res.fail({ message: 'Not enough data' });
@@ -15,6 +16,9 @@ Router.post('/login', (req, res) => {
       ma_sv,
       passwordHash: md5(password)
     })
+
+    let jar = request.jar();
+    req.session.jar = jar;
 
     scheduleModelQueryPromise
       .then(doc => {
@@ -30,7 +34,7 @@ Router.post('/login', (req, res) => {
           }
 
           return tinchi
-            .login(ma_sv, password)
+            .login(ma_sv, password, { jar })
             .then(data => {
               req.session.info = {
                 ma_sv,
@@ -93,7 +97,7 @@ Router.get('/tkb', (req, res) => {
             let { passwordHash } = doc1;
 
             return tinchi.login(ma_sv, passwordHash, { jar, shouldNotEncrypt: true })
-              .then(() => tinchi.getTkb(query))
+              .then(() => tinchi.getTkb(query, { jar }))
               .then(({ data, options }) => data)
               .then(tinchi.parseTkb)
               .then(data => {
@@ -158,7 +162,7 @@ Router.get('/tkb', (req, res) => {
 Router.get('/tkbOptions', (req, res) => {
   let { jar } = req.session;
 
-  tinchi.getTkb(null, {jar})
+  tinchi.getTkb(null, { jar })
     .then(({ data, options }) => {
       return options;
     })

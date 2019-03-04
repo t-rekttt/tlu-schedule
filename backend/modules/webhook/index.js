@@ -6,6 +6,7 @@ var moment = require('moment-timezone');
 moment.tz.setDefault('Asia/Ho_Chi_Minh');
 const _ = require('lodash');
 const tinchi = require('tinchi-api');
+const request = require('request');
 
 Router.post('/update', (req, res) => {
   if (!req.body || !req.body['messenger user id'] || !req.body.code) {
@@ -256,6 +257,8 @@ Router.get('/studentMark', (req, res) => {
 
   let messenger_user_id = req.query['messenger user id'];
   
+  let jar = request.jar();
+
   return messengerUserModel
     .aggregate([
       {$match: { messenger_user_id }},
@@ -284,10 +287,10 @@ Router.get('/studentMark', (req, res) => {
 
       doc = doc[0];
 
-      let loginPromise = tinchi.login(doc.ma_sv, doc.passwordHash, { shouldNotEncrypt: true });
+      let loginPromise = tinchi.login(doc.ma_sv, doc.passwordHash, { shouldNotEncrypt: true, jar });
       if (!req.query.drpHK) {
         loginPromise
-          .then(() => tinchi.getStudentMark())
+          .then(() => tinchi.getStudentMark(null, { jar }))
           .then(({ data, options }) => {
             let optionsDrpHK = options.drpHK.filter(option => option.value && option.value.length)
 
@@ -312,7 +315,7 @@ Router.get('/studentMark', (req, res) => {
         let { drpHK } = req.query;
 
         return loginPromise
-          .then(() => tinchi.getStudentMark({ drpHK }))
+          .then(() => tinchi.getStudentMark({ drpHK, jar }))
           .then(({ data, options }) => data)
           .then(tinchi.parseStudentMark)
           .then(data => {
@@ -343,6 +346,8 @@ Router.get('/examSchedule', (req, res) => {
     }
 
     let messenger_user_id = req.query['messenger user id'];
+
+    let jar = request.jar();
     
     return messengerUserModel
       .aggregate([
@@ -372,11 +377,11 @@ Router.get('/examSchedule', (req, res) => {
 
         doc = doc[0];
 
-        let loginPromise = tinchi.login(doc.ma_sv, doc.passwordHash, { shouldNotEncrypt: true });
+        let loginPromise = tinchi.login(doc.ma_sv, doc.passwordHash, { shouldNotEncrypt: true, jar });
 
         if (!req.query.examScheduleDrpSemester) {
           loginPromise
-            .then(() => tinchi.getExamList())
+            .then(() => tinchi.getExamList(null, { jar }))
             .then(({ data, options }) => {
               let optionsDrpHK = options.drpSemester
                 .filter(option => option.value && option.value.length)
@@ -410,11 +415,11 @@ Router.get('/examSchedule', (req, res) => {
           let drpSemesterName = req.query.examScheduleDrpSemesterName;
 
           return loginPromise
-            .then(() => tinchi.getExamList({ drpSemester }))
+            .then(() => tinchi.getExamList({ drpSemester }, { jar }))
             .then(({ data, options, initialFormData }) => {
               delete initialFormData.btnList;
               delete initialFormData.btnPrint;
-              return tinchi.getExamList({ drpSemester, drpDotThi: '', drpExaminationNumber: 0 }, {}, initialFormData)
+              return tinchi.getExamList({ drpSemester, drpDotThi: '', drpExaminationNumber: 0 }, {}, { jar }, initialFormData)
             })
             .then(({ data, options }) => data)
             .then(tinchi.parseExamList)
