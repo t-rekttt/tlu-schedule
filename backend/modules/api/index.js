@@ -7,65 +7,69 @@ const md5 = require('md5');
 const request = require('request');
 
 Router.post('/login', (req, res) => {
-  if (!req.body) res.fail({ message: 'Not enough data' });
+  if (!req.body || !req.body.ma_sv || !req.body.password) return res.fail({ message: 'Not enough data' });
 
-  if (req.body.ma_sv && req.body.password) {
-    let { ma_sv, password } = req.body;
+  let { ma_sv, password } = req.body;
 
-    let scheduleModelQueryPromise = scheduleModel.findOne({
-      ma_sv,
-      passwordHash: md5(password)
-    })
+  let scheduleModelQueryPromise = scheduleModel.findOne({
+    ma_sv,
+    passwordHash: md5(password)
+  })
 
-    let jar = request.jar();
-    req.session.jar = jar;
+  let jar = request.jar();
+  req.session.jar = jar;
 
-    scheduleModelQueryPromise
-      .then(doc => {
-        return new Promise(resolve => {
-          if (doc) {
-            req.session.loggedIn = true;
+  scheduleModelQueryPromise
+    .then(doc => {
+      return new Promise(resolve => {
+        if (doc) {
+          req.session.loggedIn = true;
+          req.session.info = {
+            ma_sv: doc.ma_sv,
+            passwordHash: doc.passwordHash 
+          };
+
+          resolve();
+        }
+
+        return tinchi
+          .login(ma_sv, password, { jar })
+          .then(data => {
             req.session.info = {
-              ma_sv: doc.ma_sv,
-              passwordHash: doc.passwordHash 
+              ma_sv,
+              passwordHash: md5(password)
             };
+            req.session.loggedIn = true;
 
-            resolve();
-          }
+            res.success({ data });
 
-          return tinchi
-            .login(ma_sv, password, { jar })
-            .then(data => {
-              req.session.info = {
-                ma_sv,
-                passwordHash: md5(password)
-              };
-              req.session.loggedIn = true;
+            scheduleModel
+              .update(
+                { ma_sv }, 
+                { 
+                  $set: {
+                    passwordHash: md5(password)
+                  }
+                },
+                { upsert: true }
+              )
+              .then(() => {
+                console.log('Updated passwordHash for '+ma_sv)
+                resolve();
+              })
+              .catch(err => {
+                console.log(err);
+                resolve();
+              });
 
-              scheduleModel
-                .update(
-                  { ma_sv }, 
-                  { 
-                    $set: {
-                      passwordHash: md5(password)
-                    }
-                  },
-                  { upsert: true }
-                )
-                .then(() => console.log('Updated passwordHash for '+ma_sv));
-
-              res.success({ data });
-
-              resolve();
-            });
-        });
-      })
-      .catch(err => {
-        console.log(err.message);
-        res.fail({data: err, message: err.message})
+          });
       });
-  }
-})
+    })
+    .catch(err => {
+      console.log(err.message);
+      res.fail({data: err, message: err.message})
+    });
+});
 
 Router.use((req, res, next) => {
   if (!req.session.loggedIn) {
