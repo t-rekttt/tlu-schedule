@@ -419,7 +419,7 @@ Router.get('/examSchedule', (req, res) => {
             .then(({ data, options, initialFormData }) => {
               delete initialFormData.btnList;
               delete initialFormData.btnPrint;
-              return tinchi.getExamList({ drpSemester, drpDotThi: '', drpExaminationNumber: 0 }, {}, { jar }, initialFormData)
+              return tinchi.getExamList({ drpSemester, drpDotThi: '', drpExaminationNumber: 0 }, { jar }, initialFormData)
             })
             .then(({ data, options }) => data)
             .then(tinchi.parseExamList)
