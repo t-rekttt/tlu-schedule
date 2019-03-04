@@ -5,7 +5,8 @@ const scheduleSchema = mongoose.Schema({
   drpSemester: { type: 'String' },
   hash: { type: 'String' },
   schedule: 'Mixed',
-  passwordHash: { type: 'String' }
+  passwordHash: { type: 'String' },
+  lastUpdate: { type: 'Date' }
 });
 
 module.exports = mongoose.model('schedules', scheduleSchema);
