@@ -13,8 +13,9 @@
     "express-session": "^1.15.6",
     "lodash": "^4.17.11",
     "md5": "^2.2.1",
-    "mongoose": "^5.4.15",
-    "tinchi-api": "^1.0.9"
+    "mongoose": "^5.4.17",
+    "request": "^2.88.0",
+    "tinchi-api": "^1.0.10"
   },
   "devDependencies": {},
   "scripts": {
