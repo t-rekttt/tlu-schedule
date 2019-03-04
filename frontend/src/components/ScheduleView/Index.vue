@@ -71,7 +71,7 @@
       let isDataExists = this.data && Object.keys(this.data).length;
 
       if (!isDataExists) this.loading = true;
-      
+
       fetch('/api/tkbOptions', { credentials: 'include' })
         .then(res => res.json())
         .then(res => {
@@ -108,15 +108,7 @@
       'selected.drpSemester'(val, old_val) {
         this.loading = true;
 
-        fetch(`/api/tkb?drpSemester=${val}`, { credentials: 'include' })
-          .then(res => res.json())
-          .then(res => {
-            this.data = res.data;
-            this.loading = false;
-          })
-          .catch(err => {
-            console.log(err);
-          });
+        this.updateSchedule(val);
       },
       selected: {
         handler(val) {
@@ -131,6 +123,17 @@
       }
     },
     methods: {
+      updateSchedule(semester) {
+        fetch(`/api/tkb?drpSemester=${semester}`, { credentials: 'include' })
+          .then(res => res.json())
+          .then(res => {
+            this.data = res.data;
+            this.loading = false;
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      },
       copyToClipboard(str) {
         const el = document.createElement('textarea');
         el.value = str;
@@ -177,6 +180,11 @@
               }
             );
           });
+      }
+    },
+    mounted() {
+      if (this.selected.drpSemester && !this.data || !this.data.schedule || !this.data.schedule.length) {
+        this.updateSchedule(this.selected.drpSemester);
       }
     }
   }
