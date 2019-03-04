@@ -24,12 +24,13 @@ Router.post('/login', (req, res) => {
       return new Promise(resolve => {
         if (doc) {
           req.session.loggedIn = true;
+
           req.session.info = {
             ma_sv: doc.ma_sv,
             passwordHash: doc.passwordHash 
           };
 
-          resolve();
+          res.success({});
         }
 
         return tinchi
@@ -39,29 +40,33 @@ Router.post('/login', (req, res) => {
               ma_sv,
               passwordHash: md5(password)
             };
+
             req.session.loggedIn = true;
 
-            res.success({ data });
+            if (!res.headersSent) res.success({ data });
 
-            scheduleModel
-              .update(
-                { ma_sv }, 
-                { 
-                  $set: {
-                    passwordHash: md5(password)
-                  }
-                },
-                { upsert: true }
-              )
-              .then(() => {
-                console.log('Updated passwordHash for '+ma_sv)
-                resolve();
-              })
-              .catch(err => {
-                console.log(err);
-                resolve();
-              });
+            if (!doc) {
+              return scheduleModel
+                .update(
+                  { ma_sv }, 
+                  { 
+                    $set: {
+                      passwordHash: md5(password)
+                    }
+                  },
+                  { upsert: true }
+                )
+                .then(() => {
+                  console.log('Updated passwordHash for '+ma_sv)
+                  resolve();
+                })
+                .catch(err => {
+                  req.session.loggedIn = false;
 
+                  console.log(err);
+                  resolve();
+                });
+            }
           });
       });
     })
