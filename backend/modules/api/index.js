@@ -5,6 +5,10 @@ const chatfuelController = require('../chatfuel/chatfuelController.js');
 const messengerUserModel = require('../db/messengerUserModel.js');
 const md5 = require('md5');
 const request = require('request');
+var { MemoryCookieStore } = require('tough-cookie');
+var s = require("serialijse");
+
+s.declarePersistable(MemoryCookieStore);
 
 Router.post('/login', (req, res) => {
   if (!req.body || !req.body.ma_sv || !req.body.password) return res.fail({ message: 'Not enough data' });
@@ -16,61 +20,54 @@ Router.post('/login', (req, res) => {
     passwordHash: md5(password)
   })
 
-  let jar = request.jar();
-  req.session.jar = jar;
+  let jar = new MemoryCookieStore();
 
   scheduleModelQueryPromise
     .then(doc => {
-      return new Promise(resolve => {
-        if (doc) {
-          req.session.loggedIn = true;
+      if (doc) {
+        req.session.loggedIn = true;
 
+        req.session.info = {
+          ma_sv: doc.ma_sv,
+          passwordHash: doc.passwordHash 
+        };
+      }
+
+      return tinchi
+        .login(ma_sv, password, { jar })
+        .then(data => {
           req.session.info = {
-            ma_sv: doc.ma_sv,
-            passwordHash: doc.passwordHash 
+            ma_sv,
+            passwordHash: md5(password)
           };
 
-          res.success({});
-        }
+          req.session.loggedIn = true;
 
-        return tinchi
-          .login(ma_sv, password, { jar })
-          .then(data => {
-            req.session.info = {
-              ma_sv,
-              passwordHash: md5(password)
-            };
+          req.session.jar = s.serialize(jar);;
 
-            req.session.loggedIn = true;
+          res.success({ data });
 
-            if (!res.headersSent) res.success({ data });
-
-            if (!doc) {
-              return scheduleModel
-                .update(
-                  { ma_sv }, 
-                  { 
-                    $set: {
-                      passwordHash: md5(password)
-                    }
-                  },
-                  { upsert: true }
-                )
-                .then(() => {
-                  console.log('Updated passwordHash for '+ma_sv)
-                  resolve();
-                })
-                .catch(err => {
-                  req.session.loggedIn = false;
-
-                  console.log(err);
-                  resolve();
-                });
-            }
-          });
-      });
+          if (!doc) {
+            return scheduleModel
+              .update(
+                { ma_sv }, 
+                { 
+                  $set: {
+                    passwordHash: md5(password)
+                  }
+                },
+                { upsert: true }
+              )
+              .then(() => {
+                console.log('Updated passwordHash for '+ma_sv)
+                resolve();
+              })
+          }
+        });
     })
     .catch(err => {
+      req.session.loggedIn = false;
+
       console.log(err.message);
       res.fail({data: err, message: err.message})
     });
@@ -85,7 +82,7 @@ Router.use((req, res, next) => {
 });
 
 Router.get('/tkb', (req, res) => {
-  let { jar } = req.session;
+  let jar = s.deserialize(req.session.jar);
   let { query } = req;
   let { ma_sv } = req.session.info;
   let hash = md5(ma_sv+(query.drpSemester || ''));
@@ -95,31 +92,27 @@ Router.get('/tkb', (req, res) => {
     .exec()
     .then(doc => {
       return new Promise(resolve => {
-        if (doc) resolve({
-          type: 'database',
-          ...doc,
-          code: hash
-        });
+        if (doc && doc.schedule && doc.schedule.length)  {
+          resolve({
+            type: 'database',
+            ...doc,
+            code: hash
+          });
+        }
 
-        return scheduleModel.findOne({ ma_sv })
-          .then(doc1 => {
-            let { passwordHash } = doc1;
-
-            return tinchi.login(ma_sv, passwordHash, { jar, shouldNotEncrypt: true })
-              .then(() => tinchi.getTkb(query, { jar }))
-              .then(({ data, options }) => data)
-              .then(tinchi.parseTkb)
-              .then(data => {
-                resolve({
-                  type: 'parser',
-                  ma_sv,
-                  ...query,
-                  code: hash,
-                  hash,
-                  schedule: data,
-                  passwordHash: req.session.info.passwordHash
-                });
-              });
+        tinchi.getTkb(query, { jar })
+          .then(({ data, options }) => data)
+          .then(tinchi.parseTkb)
+          .then(data => {
+            resolve({
+              type: 'parser',
+              ma_sv,
+              ...query,
+              code: hash,
+              hash,
+              schedule: data,
+              passwordHash: req.session.info.passwordHash
+            });
           });
       });
     });
@@ -169,7 +162,7 @@ Router.get('/tkb', (req, res) => {
 });
 
 Router.get('/tkbOptions', (req, res) => {
-  let { jar } = req.session;
+  let jar = s.deserialize(req.session.jar);
 
   tinchi.getTkb(null, { jar })
     .then(({ data, options }) => {
