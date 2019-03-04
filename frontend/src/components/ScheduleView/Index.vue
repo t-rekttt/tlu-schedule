@@ -63,14 +63,15 @@
               {text: 'Sắp tới', value: 'coming'}
             ]
           }
-        }
+        },
+        unresolved: null
       }
     },
     created() {
       let isDataExists = this.data && Object.keys(this.data).length;
 
       if (!isDataExists) this.loading = true;
-
+      
       fetch('/api/tkbOptions', { credentials: 'include' })
         .then(res => res.json())
         .then(res => {
@@ -82,7 +83,7 @@
             }
             
             this.options = [this.$store.state.selected];
-            this.data.code = 'Hãy đăng nhập lại để cập nhật code';
+            // this.data.code = 'Hãy đăng nhập lại để cập nhật code';
             return;          
           } else {
             this.options = res.data;
