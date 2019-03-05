@@ -173,8 +173,8 @@ Router.get('/tkb', (req, res) => {
       hash
     })
     .then(doc => {
-      if (!doc) {
-        throw 'Không tìm thấy lịch học';
+      if (!doc || !doc.schedule || !doc.schedule.length) {
+        throw 'Không tìm thấy lịch học, vui lòng cập nhật lại';
       }
 
       let timeline = groupTimelineByDay(generateTimeline(doc.schedule));
