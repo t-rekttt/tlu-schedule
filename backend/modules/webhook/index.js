@@ -423,7 +423,7 @@ Router.get('/studentMark', (req, res) => {
         let { drpHK } = req.query;
 
         return loginPromise
-          .then(() => tinchi.getStudentMark(null, { drpHK, jar }))
+          .then(() => tinchi.getStudentMark({ drpHK }, { jar }))
           .then(({ data, options }) => data)
           .then(tinchi.parseStudentMark)
           .then(data => {
