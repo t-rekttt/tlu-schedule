@@ -501,6 +501,7 @@ Router.get('/examSchedule', (req, res) => {
 });
 
 Router.post('/echo', (req, res) => {
+  console.log(req.body);
   return res.json(req.body.data);
 });
 
