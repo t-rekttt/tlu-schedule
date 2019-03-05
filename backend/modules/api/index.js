@@ -116,7 +116,8 @@ Router.post('/accountlink', (req, res) => {
             { 
               $set: {
                 passwordHash: md5(password),
-                ma_sv
+                ma_sv,
+                messenger_user_id
               }
             },
             { upsert: true }
