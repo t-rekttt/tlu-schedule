@@ -36,6 +36,14 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  if (req.body && req.body.ma_sv) {
+    req.body.ma_sv = req.body.ma_sv.trim();
+  }
+  
+  next();
+});
+
 app.use('/api', apiRouter);
 
 app.use('/webhook', webhookRouter);
