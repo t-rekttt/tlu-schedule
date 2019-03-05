@@ -154,7 +154,7 @@ Router.get('/tkb', (req, res) => {
                 buttons:[
                   {
                     type: 'web_url',
-                    url: 'https://tkb.thao.pw/login?messenger_user_id='+req.query['messenger user id'],
+                    url: 'https://tkb.thao.pw/accountlink?messenger_user_id='+req.query['messenger user id'],
                     title: 'Đăng nhập',
                     messenger_extensions: true,
                     webview_height_ratio: 'tall'
@@ -281,7 +281,7 @@ Router.get('/loginOptions', (req, res) => {
             buttons:[
               {
                 type: 'web_url',
-                url: 'https://tkb.thao.pw/login?messenger_user_id='+req.query['messenger user id'],
+                url: 'https://tkb.thao.pw/accountlink?messenger_user_id='+req.query['messenger user id'],
                 title: 'Đăng nhập',
                 messenger_extensions: true,
                 webview_height_ratio: 'tall'
