@@ -2,7 +2,7 @@ const Router = require('express').Router();
 const tinchi = require('tinchi-api');
 const scheduleModel = require('../db/scheduleModel.js');
 const chatfuelController = require('../chatfuel/chatfuelController.js');
-const messengerUserModel = require('../db/messengerUserModel.js');
+const userModel = require('../db/userModel.js');
 const md5 = require('md5');
 const request = require('request');
 var { MemoryCookieStore } = require('tough-cookie');
@@ -15,14 +15,14 @@ Router.post('/login', (req, res) => {
 
   let { ma_sv, password } = req.body;
 
-  let scheduleModelQueryPromise = scheduleModel.findOne({
+  let userModelQueryPromise = userModel.findOne({
     ma_sv,
     passwordHash: md5(password)
   })
 
   let jar = new MemoryCookieStore();
 
-  scheduleModelQueryPromise
+  userModelQueryPromise
     .then(doc => {
       if (doc) {
         req.session.loggedIn = true;
@@ -48,7 +48,7 @@ Router.post('/login', (req, res) => {
           res.success({ data });
 
           if (!doc) {
-            return scheduleModel
+            return userModel
               .update(
                 { ma_sv }, 
                 { 
@@ -69,6 +69,77 @@ Router.post('/login', (req, res) => {
       req.session.loggedIn = false;
 
       console.log(err.message);
+      res.fail({data: err, message: err.message})
+    });
+});
+
+Router.post('/accountlink', (req, res) => {
+  if (!req.body || !req.body.ma_sv || !req.body.password || !req.body.messenger_user_id) return res.fail({ message: 'Not enough data' });
+
+  let { ma_sv, password, messenger_user_id } = req.body;
+  let { jar } = req.session;
+
+  chatfuelController
+    .sendBroadcast(
+      process.env.BOT_ID, 
+      messenger_user_id, 
+      process.env.BROADCAST_TOKEN, 
+      process.env.TEXT_BLOCK, 
+      { broadcast_text: 'Đang thực hiện liên kết với tài khoản sinh viên '+ma_sv+', bạn vui lòng đợi một lát nhé' }
+    )
+    .catch(err => {
+      console.log(err.message);
+    });
+
+  return tinchi
+    .login(ma_sv, password, { jar })
+    .then(data => {
+      req.session.info = {
+        ma_sv,
+        passwordHash: md5(password)
+      };
+
+      res.success({});
+
+      return Promise.all([
+        chatfuelController
+          .sendBroadcast(
+            process.env.BOT_ID, 
+            messenger_user_id, 
+            process.env.BROADCAST_TOKEN, 
+            process.env.ACCOUNT_LINKING_SUCCESS_BLOCK_NAME, 
+            { broadcast_text: 'Đã liên kết thành công với tài khoản sinh viên '+ma_sv }
+          ),
+        userModel
+          .update(
+            { ma_sv }, 
+            { 
+              $set: {
+                passwordHash: md5(password),
+                messenger_user_id
+              }
+            },
+            { upsert: true }
+          )
+          .then(() => {
+            console.log('Updated passwordHash for '+ma_sv)
+          })
+      ]);
+    })
+    .catch(err => {
+      console.log(ma_sv, err.message);
+
+      chatfuelController
+        .sendBroadcast(
+          process.env.BOT_ID, 
+          messenger_user_id, 
+          process.env.BROADCAST_TOKEN, 
+          process.env.ACCOUNT_LINKING_ERROR_BLOCK_NAME, 
+          { broadcast_text: 'Liên kết tài khoản thất bại. Lỗi: '+err.message }
+        )
+        .catch(err => {
+          console.log(err.message);
+        });
       res.fail({data: err, message: err.message})
     });
 });
@@ -111,7 +182,7 @@ Router.get('/tkb', (req, res) => {
               code: hash,
               hash,
               schedule: data,
-              passwordHash: req.session.info.passwordHash
+              lastUpdate: Date.now()
             });
           });
       });
@@ -192,7 +263,7 @@ Router.post('/updateFromMessenger', (req, res) => {
             messenger_user_id, 
             process.env.BROADCAST_TOKEN, 
             process.env.CANT_FIND_SCHEDULE_BLOCK_NAME, 
-            { broadcast_text: 'Không tìm thấy lịch học. Vui lòng cập nhật lại code!' }
+            { broadcast_text: 'Không tìm thấy lịch học. Vui lòng thử cập nhật lại!' }
           )
           .then(data => res.json(data))
           .catch(err => {
@@ -202,7 +273,7 @@ Router.post('/updateFromMessenger', (req, res) => {
           });
       }
 
-      return messengerUserModel.updateOne({ messenger_user_id }, {
+      return userModel.updateOne({ messenger_user_id }, {
         messenger_user_id,
         hash: code
       }, { upsert: true })

@@ -1,12 +1,13 @@
 const Router = require('express').Router();
 const scheduleModel = require('../db/scheduleModel.js');
-const messengerUserModel = require('../db/messengerUserModel.js');
+const userModel = require('../db/userModel.js');
 const { generateTimeline, groupTimelineByDay } = require('tinchi-api');
 var moment = require('moment-timezone');
 moment.tz.setDefault('Asia/Ho_Chi_Minh');
 const _ = require('lodash');
 const tinchi = require('tinchi-api');
 const request = require('request');
+const chatfuelController = require('../chatfuel/chatfuelController.js');
 
 Router.post('/update', (req, res) => {
   if (!req.body || !req.body['messenger user id'] || !req.body.code) {
@@ -25,12 +26,12 @@ Router.post('/update', (req, res) => {
       if (!doc) {
         return res.json({
           messages: [
-            {text: 'Không tìm thấy lịch học. Vui lòng thử cập nhật lại hoặc thử lại sau'}
+            {text: 'Không tìm thấy lịch học. Vui lòng thử cập nhật lại!'}
           ]
         });
       }
 
-      messengerUserModel.updateOne({ messenger_user_id }, {
+      userModel.updateOne({ messenger_user_id }, {
         messenger_user_id,
         hash: code
       }, { upsert: true })
@@ -41,6 +42,87 @@ Router.post('/update', (req, res) => {
           ]
         });
       });
+    });
+});
+
+Router.get('/updateOptions', (req, res) => {
+  if (!req.query || !req.query['messenger user id']) {
+    return res.json({
+      messages: [
+        {text: 'Không đủ dữ liệu!'}
+      ]
+    });
+  }
+
+  let messenger_user_id = req.query['messenger user id'];
+
+  res.json({
+    messages: [
+      { text: 'Đang lấy dữ liệu lịch học, xin bạn vui lòng chờ chút...' }
+    ]
+  });
+
+  return userModel.findOne({ messenger_user_id })
+    .then(doc => {
+      if (!doc) {
+        return chatfuelController
+          .sendBroadcast(
+            process.env.BOT_ID, 
+            messenger_user_id, 
+            process.env.BROADCAST_TOKEN, 
+            process.env.TEXT_BLOCK, 
+            { broadcast_text: 'Không tìm thấy dữ liệu tài khoản, bạn hãy liên kết lại tài khoản để tiếp tục sử dụng!' }
+          )
+          .catch(err => {
+            console.log(err.message);
+          });
+      }
+
+      let jar = request.jar();
+      let { ma_sv, passwordHash } = doc;
+      tinchi.login(ma_sv, passwordHash, { jar, shouldNotEncrypt: true })
+        .then(() => tinchi.getTkb(null, { jar }))
+        .then(({ data, options }) => {
+          return options;
+        })
+        .then(options => {
+          let optionsDrpSemester = options.drpSemester.filter(option => option.value && option.value.length)
+          .filter(option => {
+            let year = parseInt(option.text.split('_')[1]);
+            let year1 = parseInt(option.text.split('_')[2]);
+            let year2 = new Date().getFullYear();
+            return ((2 * year2 - year1 - year) === 1);
+          });
+
+          let json = {
+            messages: [
+              { 
+                text: 'Chọn học kì để cập nhật lịch học',
+                quick_replies: optionsDrpSemester.map(option => {
+                  return {
+                    title: option.text,
+                    set_attributes: {
+                      code: option.value
+                    },
+                    block_names: ['Update API']
+                  }
+                })
+              }
+            ]
+          };
+
+          return chatfuelController
+            .sendBroadcast(
+              process.env.BOT_ID, 
+              messenger_user_id, 
+              process.env.BROADCAST_TOKEN, 
+              process.env.JSON_BLOCK, 
+              { data: JSON.stringify(json) }
+            )
+            .catch(err => {
+              console.log(err.message);
+            });
+        });
     });
 });
 
@@ -55,7 +137,7 @@ Router.get('/tkb', (req, res) => {
 
   let messenger_user_id = req.query['messenger user id'];
 
-  messengerUserModel.findOne({
+  userModel.findOne({
     messenger_user_id
   })
   .then(doc => {
@@ -67,7 +149,7 @@ Router.get('/tkb', (req, res) => {
               type: 'template',
               payload: {
                 template_type: 'button',
-                text: 'Hãy làm theo các bước sau để bắt đầu sử dụng:\n1. Bấm nút "Đăng nhập", một cửa sổ sẽ hiện lên để bạn điền thông tin\n2. Điền thông tin đăng nhập của bạn trên trang đăng ký học và nhấn "Đăng nhập"\n3. Chọn lịch của học kì bạn muốn thêm vào chatbot\n4. Nhấn "Thêm vào chatbot"',
+                text: 'Hãy làm theo các bước sau để bắt đầu sử dụng:\n1. Bấm nút "Đăng nhập", một cửa sổ sẽ hiện lên để bạn điền thông tin\n2. Điền thông tin đăng nhập của bạn trên trang đăng ký học và nhấn "Đăng nhập"\n3. Chọn học kì bạn muốn nhập trên chatbot',
                 buttons:[
                   {
                     type: 'web_url',
@@ -178,7 +260,7 @@ Router.get('/tkb', (req, res) => {
   });
 });
 
-Router.get('/login_options', (req, res) => {
+Router.get('/loginOptions', (req, res) => {
   if (!req.query || !req.query['messenger user id']) {
     return res.json({
       messages: [
@@ -194,7 +276,7 @@ Router.get('/login_options', (req, res) => {
           type: 'template',
           payload: {
             template_type: 'button',
-            text: 'Hãy làm theo các bước sau để bắt đầu sử dụng:\n1. Bấm nút "Đăng nhập", một cửa sổ sẽ hiện lên để bạn điền thông tin\n2. Điền thông tin đăng nhập của bạn trên trang đăng ký học và nhấn "Đăng nhập"\n3. Chọn lịch của học kì bạn muốn thêm vào chatbot\n4. Nhấn "Thêm vào chatbot"',
+            text: 'Hãy làm theo các bước sau để bắt đầu sử dụng:\n1. Bấm nút "Đăng nhập", một cửa sổ sẽ hiện lên để bạn điền thông tin\n2. Điền thông tin đăng nhập của bạn trên trang đăng ký học và nhấn "Đăng nhập"\n3. Chọn học kì bạn muốn nhập trên chatbot',
             buttons:[
               {
                 type: 'web_url',
@@ -221,7 +303,7 @@ Router.post('/subscribe', (req, res) => {
   }
 
   let messenger_user_id = req.body['messenger user id'];
-  return messengerUserModel.updateOne({
+  return userModel.updateOne({
     messenger_user_id
   }, {
     $set: {
@@ -259,33 +341,16 @@ Router.get('/studentMark', (req, res) => {
   
   let jar = request.jar();
 
-  return messengerUserModel
-    .aggregate([
-      {$match: { messenger_user_id }},
-      {
-        $lookup: {
-          from: 'schedules',
-          localField: 'hash',
-          foreignField: 'hash',
-          as: 'passwordHash'
-        }
-      },
-      {$unwind: '$passwordHash'},
-      {$addFields: { 
-        'ma_sv': '$passwordHash.ma_sv',
-        'passwordHash': '$passwordHash.passwordHash' }
-      }
-    ])
+  return userModel
+    .findOne({ messenger_user_id })
     .then(doc => {
-      if (!doc || !doc.length) {
+      if (!doc) {
         return res.json({
           messages:[
-            { 'text': 'Vui lòng cập nhật lịch học trước khi tra cứu điểm để hệ thống có thể liên kết tài khoản của bạn với trang đăng ký học' }
+            { 'text': 'Vui lòng thực hiện liên kết tài khoản!' }
           ]
         });
       }
-
-      doc = doc[0];
 
       let loginPromise = tinchi.login(doc.ma_sv, doc.passwordHash, { shouldNotEncrypt: true, jar });
       if (!req.query.drpHK) {
@@ -349,33 +414,16 @@ Router.get('/examSchedule', (req, res) => {
 
     let jar = request.jar();
     
-    return messengerUserModel
-      .aggregate([
-        {$match: { messenger_user_id }},
-        {
-          $lookup: {
-            from: 'schedules',
-            localField: 'hash',
-            foreignField: 'hash',
-            as: 'passwordHash'
-          }
-        },
-        {$unwind: '$passwordHash'},
-        {$addFields: { 
-          'ma_sv': '$passwordHash.ma_sv',
-          'passwordHash': '$passwordHash.passwordHash' }
-        }
-      ])
+    return userModel
+      .aggregate({ messenger_user_id })
       .then(doc => {
-        if (!doc || !doc.length) {
+        if (!doc) {
           return res.json({
             messages:[
-              { 'text': 'Vui lòng cập nhật lịch học trước khi tra cứu điểm để hệ thống có thể liên kết tài khoản của bạn với trang đăng ký học' }
+              { 'text': 'Vui lòng thực hiện liên kết tài khoản!' }
             ]
           });
         }
-
-        doc = doc[0];
 
         let loginPromise = tinchi.login(doc.ma_sv, doc.passwordHash, { shouldNotEncrypt: true, jar });
 
@@ -450,6 +498,10 @@ Router.get('/examSchedule', (req, res) => {
             });
         }
       });
+});
+
+Router.post('/echo', (req, res) => {
+  return res.json(req.body.data);
 });
 
 Router.post('*', (req, res) => {

@@ -5,6 +5,7 @@ import BootstrapVue from 'bootstrap-vue'
 import HelloWorld from './components/HelloWorld'
 import Login from './components/Login'
 import ScheduleView from './components/ScheduleView/Index'
+import AccountLink from './components/AccountLink.vue'
 import store from './store.js';
 
 Vue.use(VueRouter);
@@ -15,6 +16,7 @@ Vue.config.productionTip = false
 const routes = [
   { path: '/hello', component: HelloWorld },
   { path: '/login', component: Login },
+  { path: '/accountlink', component: AccountLink },
   { path: '/', component: ScheduleView }
 ];
 
