@@ -353,6 +353,10 @@ Router.get('/studentMark', (req, res) => {
         });
       }
 
+      res.json({
+        messages: []
+      });
+
       let loginPromise = tinchi.login(doc.ma_sv, doc.passwordHash, { shouldNotEncrypt: true, jar });
       if (!req.query.drpHK) {
         loginPromise
@@ -360,7 +364,7 @@ Router.get('/studentMark', (req, res) => {
           .then(({ data, options }) => {
             let optionsDrpHK = options.drpHK.filter(option => option.value && option.value.length)
 
-            return res.json({
+            let json = {
               messages: [
                 { 
                   text: 'Chọn học kì bạn cần tra cứu điểm',
@@ -375,7 +379,21 @@ Router.get('/studentMark', (req, res) => {
                   })
                 }
               ]
-            });
+            };
+
+            console.log(json);
+
+            return chatfuelController
+              .sendBroadcast(
+                process.env.BOT_ID, 
+                messenger_user_id, 
+                process.env.BROADCAST_TOKEN, 
+                process.env.JSON_BLOCK, 
+                { data: JSON.stringify(json) }
+              )
+              .catch(err => {
+                console.log(err.message);
+              });
           });
       } else {
         let { drpHK } = req.query;
@@ -389,14 +407,26 @@ Router.get('/studentMark', (req, res) => {
               return { text: `${subject.ten_hoc_phan} (${subject.ma_hoc_phan}): \nSố tín chỉ: ${subject.so_tin_chi}\nQuá trình: ${subject.qua_trinh}\nThi: ${subject.thi}\nTKHP: ${subject.tkhp}\nĐiểm chữ: ${subject.diem_chu}` };
             });
 
-            return res.json({
+            let json = {
               messages: [
                 {
                   text: `[${doc.ma_sv}] Các điểm của bạn trong học kì ${drpHK}: `
                 },
                 ...markMessage
               ]
-            });
+            };
+
+            return chatfuelController
+              .sendBroadcast(
+                process.env.BOT_ID, 
+                messenger_user_id, 
+                process.env.BROADCAST_TOKEN, 
+                process.env.JSON_BLOCK, 
+                { data: JSON.stringify(json) }
+              )
+              .catch(err => {
+                console.log(err.message);
+              });
           });
       }
     });
