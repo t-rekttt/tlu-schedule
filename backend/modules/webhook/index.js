@@ -381,8 +381,6 @@ Router.get('/studentMark', (req, res) => {
               ]
             };
 
-            console.log(json);
-
             return chatfuelController
               .sendBroadcast(
                 process.env.BOT_ID, 
@@ -532,6 +530,7 @@ Router.get('/examSchedule', (req, res) => {
 });
 
 Router.post('/echo', (req, res) => {
+  console.log(req.body);
   return res.json(JSON.parse(req.body.data));
 });
 
