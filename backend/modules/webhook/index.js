@@ -36,34 +36,34 @@ Router.post('/update', (req, res) => {
     scheduleModel.findOne({ hash: code }),
     userModel.findOne({ hash: code })
   ])
-    .then((doc, doc1) => {
-      return
-        tinchi.login(doc1.ma_sv, doc1.passwordHash, { jar, shouldNotEncrypt: true }) 
-          .then(() => tinchi.getTkb({ drpSemester: doc.drpSemester }, { jar }))
-          .then(({ data, options }) => data)
-          .then(tinchi.parseTkb)
-          .then(data => {
-            return {
-              schedule: data,
-              lastUpdate: Date.now(),
-              messenger_user_id,
-              hash: code
-            }
-          })
-          .then(data => scheduleModel.updateOne({ hash: code }, { $set: data }))
-          .then(() => {
-            return chatfuelController
-              .sendBroadcast(
-                process.env.BOT_ID, 
-                messenger_user_id, 
-                process.env.BROADCAST_TOKEN, 
-                process.env.TEXT_BLOCK, 
-                { broadcast_text: 'Cập nhật thành công!' }
-              )
-              .catch(err => {
-                console.log(err.message);
-              });
-          });
+    .then(([doc, doc1]) => {
+      return tinchi
+        .login(doc1.ma_sv, doc1.passwordHash, { jar, shouldNotEncrypt: true }) 
+        .then(() => tinchi.getTkb({ drpSemester: doc.drpSemester }, { jar }))
+        .then(({ data, options }) => data)
+        .then(tinchi.parseTkb)
+        .then(data => {
+          return {
+            schedule: data,
+            lastUpdate: Date.now(),
+            messenger_user_id,
+            hash: code
+          }
+        })
+        .then(data => scheduleModel.updateOne({ hash: code }, { $set: data }))
+        .then(() => {
+          return chatfuelController
+            .sendBroadcast(
+              process.env.BOT_ID, 
+              messenger_user_id, 
+              process.env.BROADCAST_TOKEN, 
+              process.env.TEXT_BLOCK, 
+              { broadcast_text: 'Cập nhật thành công!' }
+            )
+            .catch(err => {
+              console.log(err.message);
+            });
+        });
     });
 });
 
