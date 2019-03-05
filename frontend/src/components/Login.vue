@@ -25,8 +25,9 @@
             </b-form-input>
           </b-form-group>
           <p class="text-danger">{{ error_message }}</p>
+          <p class="text-info">{{ status_message }}</p>
           <div class="text-center">
-            <b-button type="submit" variant="primary">Đăng nhập</b-button>
+            <b-button type="submit" variant="primary" :disabled="logging_in">Đăng nhập</b-button>
           </div>
         </b-form>
       </div>
@@ -43,7 +44,9 @@ export default {
         password: '',
       },
       error_message: null,
-      show: true
+      status_message: null,
+      show: true,
+      logging_in: false
     }
   },
   methods: {
@@ -60,6 +63,8 @@ export default {
     },
     onSubmit (evt) {
       this.error_message = null;
+      this.status_message = 'Đang đăng nhập...';
+      this.logging_in = true;
       evt.preventDefault();
 
       fetch('/api/login', {
@@ -78,11 +83,14 @@ export default {
         }
 
         this.error_message = res.message;
+        this.status_message = null;
+        this.logging_in = false;
       })
       .catch(err => {
         console.log(err);
 
         this.error_message = 'Lỗi không xác định';
+        this.logging_in = false;
       });
     },
     onReset (evt) {
