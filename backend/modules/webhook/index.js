@@ -416,7 +416,7 @@ Router.get('/examSchedule', (req, res) => {
     let jar = request.jar();
     
     return userModel
-      .aggregate({ messenger_user_id })
+      .findOne({ messenger_user_id })
       .then(doc => {
         if (!doc) {
           return res.json({
