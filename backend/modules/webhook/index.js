@@ -10,6 +10,7 @@ const request = require('request');
 const chatfuelController = require('../chatfuel/chatfuelController.js');
 const md5 = require('md5');
 const async = require('async');
+const jsonpack = require('jsonpack');
 
 Router.post('/update', (req, res) => {
   if (!req.body || !req.body['messenger user id'] || !req.body.code) {
@@ -119,7 +120,7 @@ Router.get('/updateOptions', (req, res) => {
               messenger_user_id, 
               process.env.BROADCAST_TOKEN, 
               process.env.JSON_BLOCK, 
-              { data: JSON.stringify(json) }
+              { data: jsonpack.pack(json) }
             )
             .catch(err => {
               console.log(err.message);
@@ -388,7 +389,7 @@ Router.get('/studentMark', (req, res) => {
                 messenger_user_id, 
                 process.env.BROADCAST_TOKEN, 
                 process.env.JSON_BLOCK, 
-                { data: JSON.stringify(json) }
+                { data: jsonpack.pack(json) }
               )
               .catch(err => {
                 console.log(err.message);
@@ -461,6 +462,10 @@ Router.get('/examSchedule', (req, res) => {
           });
         }
 
+        res.json({
+          messages: []
+        });
+
         let loginPromise = tinchi.login(doc.ma_sv, doc.passwordHash, { shouldNotEncrypt: true, jar });
 
         if (!req.query.examScheduleDrpSemester) {
@@ -474,9 +479,9 @@ Router.get('/examSchedule', (req, res) => {
                   return new Date().getFullYear() >= year;
                 });
 
-              optionsDrpHK = optionsDrpHK.slice(0, 11);
+              optionsDrpHK = optionsDrpHK.slice(0, 5);
 
-              return res.json({
+              let json = {
                 messages: [
                   { 
                     text: 'Chọn học kì bạn cần tra cứu lịch thi',
@@ -492,7 +497,19 @@ Router.get('/examSchedule', (req, res) => {
                     })
                   }
                 ]
-              });
+              };
+
+              return chatfuelController
+                .sendBroadcast(
+                  process.env.BOT_ID, 
+                  messenger_user_id, 
+                  process.env.BROADCAST_TOKEN, 
+                  process.env.JSON_BLOCK, 
+                  { data: jsonpack.pack(json) }
+                )
+                .catch(err => {
+                  console.log(err.message);
+                });
             });
         } else {
           let drpSemester = req.query.examScheduleDrpSemester;
@@ -512,24 +529,42 @@ Router.get('/examSchedule', (req, res) => {
                 return { text: `${subject.ten_hoc_phan} (${subject.ma_hoc_phan}): \nSố tín chỉ: ${subject.so_tin_chi}\nNgày thi: ${subject.ngay_thi}\nCa thi: ${subject.ca_thi}\nHình thức thi: ${subject.hinh_thuc_thi}\nSố báo danh: ${subject.so_bao_danh}\nPhòng thi: ${subject.phong_thi}\nGhi chú: ${subject.ghi_chu}` };
               });
 
+              let json = {};
+
               if (!data || !data.length) {
-                return res.json({
-                messages: [
-                  {
-                    text: `[${doc.ma_sv}] Bạn chưa có lịch thi của học kì này!`
-                  },
-                  ...examScheduleMessage
-                ]
-              });
+                json = {
+                  messages: [
+                    {
+                      text: `[${doc.ma_sv}] Bạn chưa có lịch thi của học kì này!`
+                    },
+                    ...examScheduleMessage
+                  ]
+                }
+              } else {
+                json = {
+                  messages: [
+                    {
+                      text: `[${doc.ma_sv}] Lịch thi của bạn trong học kì ${drpSemesterName}: `
+                    },
+                    ...examScheduleMessage
+                  ]
+                };
               }
 
-              return res.json({
-                messages: [
-                  {
-                    text: `[${doc.ma_sv}] Lịch thi của bạn trong học kì ${drpSemesterName}: `
-                  },
-                  ...examScheduleMessage
-                ]
+              return async.mapSeries(json.messages, (message, cb) => {
+                return chatfuelController
+                  .sendBroadcast(
+                    process.env.BOT_ID, 
+                    messenger_user_id, 
+                    process.env.BROADCAST_TOKEN, 
+                    process.env.TEXT_BLOCK, 
+                    { broadcast_text: message.text }
+                  )
+                  .then(() => cb())
+                  .catch(err => {
+                    console.log(err.message);
+                    cb();
+                  });
               });
             });
         }
@@ -537,8 +572,7 @@ Router.get('/examSchedule', (req, res) => {
 });
 
 Router.post('/echo', (req, res) => {
-  console.log(req.body);
-  return res.json(JSON.parse(req.body.data));
+  return res.json(jsonpack.unpack(req.body.data));
 });
 
 Router.post('*', (req, res) => {
