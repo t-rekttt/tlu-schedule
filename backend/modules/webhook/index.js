@@ -34,7 +34,7 @@ Router.post('/update', (req, res) => {
 
   Promise.all([
     scheduleModel.findOne({ hash: code }),
-    userModel.findOne({ hash: code })
+    userModel.findOne({ messenger_user_id })
   ])
     .then(([doc, doc1]) => {
       return tinchi
@@ -50,7 +50,12 @@ Router.post('/update', (req, res) => {
             hash: code
           }
         })
-        .then(data => scheduleModel.updateOne({ hash: code }, { $set: data }))
+        .then(data => {
+          return Promise.all([
+            scheduleModel.updateOne({ hash: code }, { $set: data }, { upsert: true }),
+            userModel.updateOne({ messenger_user_id }, { $set: { hash: code } })
+          ]);
+        })
         .then(() => {
           return chatfuelController
             .sendBroadcast(
