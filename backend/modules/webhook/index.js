@@ -9,6 +9,7 @@ const tinchi = require('tinchi-api');
 const request = require('request');
 const chatfuelController = require('../chatfuel/chatfuelController.js');
 const md5 = require('md5');
+const async = require('async');
 
 Router.post('/update', (req, res) => {
   if (!req.body || !req.body['messenger user id'] || !req.body.code) {
@@ -414,17 +415,23 @@ Router.get('/studentMark', (req, res) => {
               ]
             };
 
-            return chatfuelController
-              .sendBroadcast(
-                process.env.BOT_ID, 
-                messenger_user_id, 
-                process.env.BROADCAST_TOKEN, 
-                process.env.JSON_BLOCK, 
-                { data: JSON.stringify(json) }
-              )
-              .catch(err => {
-                console.log(err.message);
-              });
+            return async.mapSeries(json.messages, (message, cb) => {
+              return chatfuelController
+                .sendBroadcast(
+                  process.env.BOT_ID, 
+                  messenger_user_id, 
+                  process.env.BROADCAST_TOKEN, 
+                  process.env.TEXT_BLOCK, 
+                  { broadcast_text: message.text }
+                )
+                .then(() => cb())
+                .catch(err => {
+                  console.log(err.message);
+                  cb();
+                });
+            });
+          }, (err, data) => {
+            if (err) console.log(err);
           });
       }
     });
