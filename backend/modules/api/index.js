@@ -112,11 +112,11 @@ Router.post('/accountlink', (req, res) => {
           ),
         userModel
           .update(
-            { ma_sv }, 
+            { messenger_user_id }, 
             { 
               $set: {
                 passwordHash: md5(password),
-                messenger_user_id
+                ma_sv
               }
             },
             { upsert: true }
