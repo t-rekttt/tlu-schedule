@@ -204,19 +204,24 @@ Router.get('/tkb', (req, res) => {
         timeline = timeline.filter(day => day.today)[0];
 
         var messages = [];
-        if (!timeline) {
+        if (!timeline || !timeline.subjects || !timeline.subjects.length) {
           messages.push('Bạn không có lịch môn nào hôm nay!');
         } else {
-          messages.push(`[${doc.ma_sv}] Hôm nay bạn có các môn:\n`);
-
           timeline.subjects = timeline.subjects.filter(subject => subject.timestamp.end.isSameOrAfter(moment()));
-          timeline.subjects.map(subject => {
-            let location = (subject.locations && subject.locations[subject.phase]) ? subject.locations[subject.phase].location : subject.dia_diem;
-            let time_range = `${ subject.timestamp.start.format('H[h]mm') }-${ subject.timestamp.end.format('H[h]mm') }`;
-            let name = subject.lop_hoc_phan;
 
-            messages.push(`${name}\nThời gian: ${time_range}\nĐịa điểm: ${location}`);
-          });
+          if (!timeline.subjects.length) {
+            messages.push('Bạn đã hết lịch môn học hôm nay!');
+          } else {
+            messages.push(`[${doc.ma_sv}] Hôm nay bạn có các môn:\n`);
+
+            timeline.subjects.map(subject => {
+              let location = (subject.locations && subject.locations[subject.phase]) ? subject.locations[subject.phase].location : subject.dia_diem;
+              let time_range = `${ subject.timestamp.start.format('H[h]mm') }-${ subject.timestamp.end.format('H[h]mm') }`;
+              let name = subject.lop_hoc_phan;
+
+              messages.push(`${name}\nThời gian: ${time_range}\nĐịa điểm: ${location}`);
+            });
+          }
         }
 
         return res.json({
