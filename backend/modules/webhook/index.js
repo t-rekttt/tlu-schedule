@@ -8,6 +8,7 @@ const _ = require('lodash');
 const tinchi = require('tinchi-api');
 const request = require('request');
 const chatfuelController = require('../chatfuel/chatfuelController.js');
+const md5 = require('md5');
 
 Router.post('/update', (req, res) => {
   if (!req.body || !req.body['messenger user id'] || !req.body.code) {
@@ -102,7 +103,7 @@ Router.get('/updateOptions', (req, res) => {
                   return {
                     title: option.text,
                     set_attributes: {
-                      code: option.value
+                      code: md5(ma_sv+option.value)
                     },
                     block_names: ['Update API']
                   }
