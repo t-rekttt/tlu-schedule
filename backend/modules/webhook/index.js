@@ -386,7 +386,7 @@ Router.get('/examSchedule', (req, res) => {
               let optionsDrpHK = options.drpSemester
                 .filter(option => option.value && option.value.length)
                 .filter(option => {
-                  let year = parseInt(option.text.split('_').reverse()[1]);
+                  let year = parseInt(option.text.split('_').reverse()[0]);
                   return new Date().getFullYear() >= year;
                 });
 
