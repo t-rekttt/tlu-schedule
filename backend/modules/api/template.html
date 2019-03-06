@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+      .table-bordered, td, th {
+        border: 1px solid black !important;
+      }
+
+      .day-of-week-cells {
+        background-color: #e74c3c;
+        color: white;
+      }
+
+      .period-cells {
+        background-color: #d35400;
+        color: white;
+      }
+
+      .stupid-cell {
+        background-color: #c0392b;
+        color: white;
+      }
+
+      .subject-cells {
+        min-width: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <table class="table">
+       <thead>
+          <tr>
+             <th class="stupid-cell">
+                m.me/lichhoctlu
+             </th>
+             <th class="day-of-week-cells">Thứ 2</th>
+             <th class="day-of-week-cells">Thứ 3</th>
+             <th class="day-of-week-cells">Thứ 4</th>
+             <th class="day-of-week-cells">Thứ 5</th>
+             <th class="day-of-week-cells">Thứ 6</th>
+          </tr>
+       </thead>
+       <tbody>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 1</b>: (7h<span> - 7h50)</span></td>
+             <td id="t2_1" class="text-center align-middle subject-cells"></td>
+             <td id="t3_1" class="text-center align-middle subject-cells"></td>
+             <td id="t4_1" class="text-center align-middle subject-cells"></td>
+             <td id="t5_1" class="text-center align-middle subject-cells"></td>
+             <td id="t6_1" class="text-center align-middle subject-cells"></td>
+          </tr>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 2</b>: (7h<span>55 - 8h45)</span></td>
+             <td id="t2_2" class="text-center align-middle subject-cells"></td>
+             <td id="t3_2" class="text-center align-middle subject-cells"></td>
+             <td id="t4_2" class="text-center align-middle subject-cells"></td>
+             <td id="t5_2" class="text-center align-middle subject-cells"></td>
+             <td id="t6_2" class="text-center align-middle subject-cells"></td>
+          </tr>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 3</b>: (8h<span>50 - 9h40)</span></td>
+             <td id="t2_3" class="text-center align-middle subject-cells"></td>
+             <td id="t3_3" class="text-center align-middle subject-cells"></td>
+             <td id="t4_3" class="text-center align-middle subject-cells"></td>
+             <td id="t5_3" class="text-center align-middle subject-cells"></td>
+             <td id="t6_3" class="text-center align-middle subject-cells"></td>
+          </tr>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 4</b>: (9h<span>45 - 10h35)</span></td>
+             <td id="t2_4" class="text-center align-middle subject-cells"></td>
+             <td id="t3_4" class="text-center align-middle subject-cells"></td>
+             <td id="t4_4" class="text-center align-middle subject-cells"></td>
+             <td id="t5_4" class="text-center align-middle subject-cells"></td>
+             <td id="t6_4" class="text-center align-middle subject-cells"></td>
+          </tr>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 5</b>: (10h<span>40 - 11h30)</span></td>
+             <td id="t2_5" class="text-center align-middle subject-cells"></td>
+             <td id="t3_5" class="text-center align-middle subject-cells"></td>
+             <td id="t4_5" class="text-center align-middle subject-cells"></td>
+             <td id="t5_5" class="text-center align-middle subject-cells"></td>
+             <td id="t6_5" class="text-center align-middle subject-cells"></td>
+          </tr>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 6</b>: (11h<span>35 - 12h25)</span></td>
+             <td id="t2_6" class="text-center align-middle subject-cells"></td>
+             <td id="t3_6" class="text-center align-middle subject-cells"></td>
+             <td id="t4_6" class="text-center align-middle subject-cells"></td>
+             <td id="t5_6" class="text-center align-middle subject-cells"></td>
+             <td id="t6_6" class="text-center align-middle subject-cells"></td>
+          </tr>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 7</b>: (12h<span>55 - 13h45)</span></td>
+             <td id="t2_7" class="text-center align-middle subject-cells"></td>
+             <td id="t3_7" class="text-center align-middle subject-cells"></td>
+             <td id="t4_7" class="text-center align-middle subject-cells"></td>
+             <td id="t5_7" class="text-center align-middle subject-cells"></td>
+             <td id="t6_7" class="text-center align-middle subject-cells"></td>
+          </tr>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 8</b>: (13h<span>50 - 14h40)</span></td>
+             <td id="t2_8" class="text-center align-middle subject-cells"></td>
+             <td id="t3_8" class="text-center align-middle subject-cells"></td>
+             <td id="t4_8" class="text-center align-middle subject-cells"></td>
+             <td id="t5_8" class="text-center align-middle subject-cells"></td>
+             <td id="t6_8" class="text-center align-middle subject-cells"></td>
+          </tr>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 9</b>: (14h<span>45 - 15h35)</span></td>
+             <td id="t2_9" class="text-center align-middle subject-cells"></td>
+             <td id="t3_9" class="text-center align-middle subject-cells"></td>
+             <td id="t4_9" class="text-center align-middle subject-cells"></td>
+             <td id="t5_9" class="text-center align-middle subject-cells"></td>
+             <td id="t6_9" class="text-center align-middle subject-cells"></td>
+          </tr>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 10</b>: (15h<span>40 - 16h30)</span></td>
+             <td id="t2_10" class="text-center align-middle subject-cells"></td>
+             <td id="t3_10" class="text-center align-middle subject-cells"></td>
+             <td id="t4_10" class="text-center align-middle subject-cells"></td>
+             <td id="t5_10" class="text-center align-middle subject-cells"></td>
+             <td id="t6_10" class="text-center align-middle subject-cells"></td>
+          </tr>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 11</b>: (16h<span>35 - 17h25)</span></td>
+             <td id="t2_11" class="text-center align-middle subject-cells"></td>
+             <td id="t3_11" class="text-center align-middle subject-cells"></td>
+             <td id="t4_11" class="text-center align-middle subject-cells"></td>
+             <td id="t5_11" class="text-center align-middle subject-cells"></td>
+             <td id="t6_11" class="text-center align-middle subject-cells"></td>
+          </tr>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 12</b>: (17h<span>30 - 18h20)</span></td>
+             <td id="t2_12" class="text-center align-middle subject-cells"></td>
+             <td id="t3_12" class="text-center align-middle subject-cells"></td>
+             <td id="t4_12" class="text-center align-middle subject-cells"></td>
+             <td id="t5_12" class="text-center align-middle subject-cells"></td>
+             <td id="t6_12" class="text-center align-middle subject-cells"></td>
+          </tr>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 13</b>: (18h<span>50 - 19h40)</span></td>
+             <td id="t2_13" class="text-center align-middle subject-cells"></td>
+             <td id="t3_13" class="text-center align-middle subject-cells"></td>
+             <td id="t4_13" class="text-center align-middle subject-cells"></td>
+             <td id="t5_13" class="text-center align-middle subject-cells"></td>
+             <td id="t6_13" class="text-center align-middle subject-cells"></td>
+          </tr>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 14</b>: (19h<span>45 - 20h35)</span></td>
+             <td id="t2_14" class="text-center align-middle subject-cells"></td>
+             <td id="t3_14" class="text-center align-middle subject-cells"></td>
+             <td id="t4_14" class="text-center align-middle subject-cells"></td>
+             <td id="t5_14" class="text-center align-middle subject-cells"></td>
+             <td id="t6_14" class="text-center align-middle subject-cells"></td>
+          </tr>
+          <tr>
+             <td class="period-cells" width="200"><b>Tiết 15</b>: (20h<span>40 - 21h30)</span></td>
+             <td id="t2_15" class="text-center align-middle subject-cells"></td>
+             <td id="t3_15" class="text-center align-middle subject-cells"></td>
+             <td id="t4_15" class="text-center align-middle subject-cells"></td>
+             <td id="t5_15" class="text-center align-middle subject-cells"></td>
+             <td id="t6_15" class="text-center align-middle subject-cells"></td>
+          </tr>
+       </tbody>
+    </table>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.23/moment-timezone.min.js"></script>
+  </body>
+</html>
