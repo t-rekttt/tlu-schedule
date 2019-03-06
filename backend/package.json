@@ -17,6 +17,7 @@
     "md5": "^2.2.1",
     "mongoose": "^5.4.17",
     "request": "^2.88.0",
+    "request-promise": "^4.2.4",
     "serialijse": "^0.1.3",
     "tinchi-api": "^1.0.14",
     "tough-cookie": "^3.0.1"

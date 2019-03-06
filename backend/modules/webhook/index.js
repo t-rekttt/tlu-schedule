@@ -6,11 +6,11 @@ var moment = require('moment-timezone');
 moment.tz.setDefault('Asia/Ho_Chi_Minh');
 const _ = require('lodash');
 const tinchi = require('tinchi-api');
-const request = require('request');
 const chatfuelController = require('../chatfuel/chatfuelController.js');
 const md5 = require('md5');
 const async = require('async');
 const jsonpack = require('jsonpack');
+const request = require('request-promise');
 
 Router.post('/update', (req, res) => {
   if (!req.body || !req.body['messenger user id'] || !req.body.code) {
@@ -598,6 +598,43 @@ Router.get('/examSchedule', (req, res) => {
             });
         }
       });
+});
+
+Router.get('/examImage', (req, res) => {
+  if (!req.query || !req.query['messenger user id']) {
+    return res.json({
+      messages: [
+        {text: 'Không đủ dữ liệu!'}
+      ]
+    });
+  }
+
+  let { messenger_user_id } = req.query;
+
+  request.get('http://web2img.thao.pw/screenshot', { 
+    qs: {
+      url: 'https://tkb.thao.pw/api1/tkb?messenger_user_id='+messenger_user_id,
+      browserOptions: {defaultViewport:{width:1600,height:785,deviceScaleFactor:2}}
+    }
+  })
+  .then(base64 => {
+    fs.writeFileSync(__dirname + '../../scheduleimgs/' + messenger_user_id+'.png', base64, 'base64', (err) => {
+      console.log(err);
+    });
+
+    return res.json({
+      messages: [
+        {
+          attachment: {
+            type: 'image',
+            payload: {
+              url: 'https://tkb.thao.pw/imgs/'+messenger_user_id+'.png'
+            }
+          }
+        }
+      ]
+    });
+  });
 });
 
 Router.post('/echo', (req, res) => {

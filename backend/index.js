@@ -54,6 +54,8 @@ app.use('/webhook', webhookRouter);
 
 app.use('/scheduletable', express.static(__dirname + '/scheduletable'));
 
+app.use('/imgs', express.static(__dirname + '/scheduleimgs'));
+
 app.use(history());
 
 app.use('/', express.static(__dirname + '/dist'));
