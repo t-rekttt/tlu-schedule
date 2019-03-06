@@ -48,6 +48,8 @@ app.use((req, res, next) => {
 
 app.use('/api', apiRouter);
 
+app.use('/api1', privateRouter);
+
 app.use('/webhook', webhookRouter);
 
 app.use('/scheduletable', express.static(__dirname + '/scheduletable'));
@@ -62,35 +64,4 @@ app.get('/test', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
-});
-
-privateApp.use(function (req, res, next) {
-  // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', 'https://tkb.thao.pw');
-
-  // Request methods you wish to allow
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-
-  // Request headers you wish to allow
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
-  res.setHeader('Access-Control-Allow-Credentials', true);
-
-  // Pass to next layer of middleware
-  next();
-});
-
-privateApp.use((req, res, next) => {
-  res.success = ({ data, message }) => res.json({success: 1, data, message});
-  res.fail = ({ data, message }) => res.status(500).json({success: 0, data, message});
-
-  next();
-});
-
-privateApp.use('/api', privateRouter);
-
-privateApp.listen(process.env.PRIVATE_PORT, () => {
-  console.log(`Private API listening on port ${process.env.PRIVATE_PORT}`);
 });

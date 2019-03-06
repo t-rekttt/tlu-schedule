@@ -66,7 +66,6 @@
     <script>
       moment.tz.setDefault('Asia/Ho_Chi_Minh');
       moment.locale('vi-VN');
-      const PRIVATE_API = 'http://localhost:6969';
 
       new Vue({
         el: '#main',
@@ -92,7 +91,7 @@
           let subjectsCode = {};
 
           if (qs.messenger_user_id) {
-            fetch(PRIVATE_API+'/api/tkb?messenger_user_id='+qs.messenger_user_id)
+            fetch('/api1/tkb?messenger_user_id='+qs.messenger_user_id)
               .then(res => res.json())
               .then(json => {
                 console.log(json);
