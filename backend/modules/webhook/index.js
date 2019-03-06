@@ -619,7 +619,7 @@ Router.get('/examImage', (req, res) => {
     }
   })
   .then(base64 => {
-    fs.writeFileSync(__dirname + '../../scheduleimgs/' + messenger_user_id+'.png', base64, 'base64', (err) => {
+    fs.writeFileSync('/scheduleimgs/' + messenger_user_id+'.png', base64, 'base64', (err) => {
       console.log(err);
     });
 

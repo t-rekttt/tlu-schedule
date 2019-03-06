@@ -6,6 +6,7 @@ import HelloWorld from './components/HelloWorld'
 import Login from './components/Login'
 import ScheduleView from './components/ScheduleView/Index'
 import AccountLink from './components/AccountLink.vue'
+import ScheduleTable from './components/ScheduleTable.vue'
 import store from './store.js';
 
 Vue.use(VueRouter);
@@ -17,7 +18,8 @@ const routes = [
   { path: '/hello', component: HelloWorld },
   { path: '/login', component: Login },
   { path: '/accountlink', component: AccountLink },
-  { path: '/', component: ScheduleView }
+  { path: '/', component: ScheduleView },
+  { path: '/scheduletable', component: ScheduleTable }
 ];
 
 const router = new VueRouter({
