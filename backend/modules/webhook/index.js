@@ -11,6 +11,7 @@ const md5 = require('md5');
 const async = require('async');
 const jsonpack = require('jsonpack');
 const request = require('request-promise');
+const fs = require('fs');
 
 Router.post('/update', (req, res) => {
   if (!req.body || !req.body['messenger user id'] || !req.body.code) {
