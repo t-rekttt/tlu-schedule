@@ -609,7 +609,7 @@ Router.get('/examImage', (req, res) => {
     });
   }
 
-  let { messenger_user_id } = req.query;
+  let messenger_user_id = req.query['messenger user id'];
 
   request.get('http://web2img.thao.pw/screenshot', { 
     qs: {
