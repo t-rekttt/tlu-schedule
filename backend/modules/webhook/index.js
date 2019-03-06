@@ -615,7 +615,7 @@ Router.get('/examImage', (req, res) => {
   request.get('http://web2img.thao.pw/screenshot', { 
     qs: {
       url: 'https://tkb.thao.pw/api1/tkb?messenger_user_id='+messenger_user_id,
-      browserOptions: JSON.stringify({defaultViewport:{width:1600,height:785,deviceScaleFactor:2}})
+      browserOptions: JSON.stringify({defaultViewport:{width:1600,height:785,deviceScaleFactor:1}})
     }
   })
   .then(base64 => {
