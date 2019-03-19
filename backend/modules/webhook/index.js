@@ -70,6 +70,20 @@ Router.post('/update', (req, res) => {
               console.log(err.message);
             });
         });
+    })
+    .catch(err => {
+      console.log(err);
+      return chatfuelController
+        .sendBroadcast(
+          process.env.BOT_ID, 
+          messenger_user_id, 
+          process.env.BROADCAST_TOKEN, 
+          process.env.TEXT_BLOCK, 
+          { broadcast_text: 'Đã có lỗi xảy ra! '+err.message }
+        )
+        .catch(err => {
+          console.log(err.message);
+        });
     });
 });
 
@@ -150,6 +164,20 @@ Router.get('/updateOptions', (req, res) => {
             .catch(err => {
               console.log(err.message);
             });
+        });
+    })
+    .catch(err => {
+      console.log(err);
+      return chatfuelController
+        .sendBroadcast(
+          process.env.BOT_ID, 
+          messenger_user_id, 
+          process.env.BROADCAST_TOKEN, 
+          process.env.TEXT_BLOCK, 
+          { broadcast_text: 'Đã có lỗi xảy ra! '+err.message }
+        )
+        .catch(err => {
+          console.log(err.message);
         });
     });
 });
@@ -390,8 +418,9 @@ Router.get('/studentMark', (req, res) => {
       });
 
       let loginPromise = tinchi.login(doc.ma_sv, doc.passwordHash, { shouldNotEncrypt: true, jar });
+
       if (!req.query.drpHK) {
-        loginPromise
+        return loginPromise
           .then(() => tinchi.getStudentMark(null, { jar }))
           .then(({ data, options }) => {
             let optionsDrpHK = options.drpHK.filter(option => option.value && option.value.length)
@@ -465,6 +494,20 @@ Router.get('/studentMark', (req, res) => {
             if (err) console.log(err);
           });
       }
+    })
+    .catch(err => {
+      console.log(err);
+      return chatfuelController
+        .sendBroadcast(
+          process.env.BOT_ID, 
+          messenger_user_id, 
+          process.env.BROADCAST_TOKEN, 
+          process.env.TEXT_BLOCK, 
+          { broadcast_text: 'Đã có lỗi xảy ra! '+err.message }
+        )
+        .catch(err => {
+          console.log(err.message);
+        });
     });
 });
 
@@ -499,7 +542,7 @@ Router.get('/examSchedule', (req, res) => {
         let loginPromise = tinchi.login(doc.ma_sv, doc.passwordHash, { shouldNotEncrypt: true, jar });
 
         if (!req.query.examScheduleDrpSemester) {
-          loginPromise
+          return loginPromise
             .then(() => tinchi.getExamList(null, { jar }))
             .then(({ data, options }) => {
               let optionsDrpHK = options.drpSemester
@@ -598,6 +641,20 @@ Router.get('/examSchedule', (req, res) => {
               });
             });
         }
+      })
+      .catch(err => {
+        console.log(err);
+        return chatfuelController
+          .sendBroadcast(
+            process.env.BOT_ID, 
+            messenger_user_id, 
+            process.env.BROADCAST_TOKEN, 
+            process.env.TEXT_BLOCK, 
+            { broadcast_text: 'Đã có lỗi xảy ra! '+err.message }
+          )
+          .catch(err => {
+            console.log(err.message);
+          });
       });
 });
 
@@ -635,6 +692,20 @@ Router.get('/examImage', (req, res) => {
         }
       ]
     });
+  })
+  .catch(err => {
+    console.log(err);
+    return chatfuelController
+      .sendBroadcast(
+        process.env.BOT_ID, 
+        messenger_user_id, 
+        process.env.BROADCAST_TOKEN, 
+        process.env.TEXT_BLOCK, 
+        { broadcast_text: 'Đã có lỗi xảy ra! '+err.message }
+      )
+      .catch(err => {
+        console.log(err.message);
+      });
   });
 });
 
