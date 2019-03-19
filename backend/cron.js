@@ -115,7 +115,7 @@ let sendSubscription = (date, start_period, end_period) => {
           process.env.BOT_ID, 
           user.messenger_user_id, 
           process.env.BROADCAST_TOKEN, 
-          process.env.UPDATE_SCHEDULE_BLOCK_NAME, 
+          process.env.TEXT_BLOCK, 
           { broadcast_text: message }
         )
         .then(() => {
