@@ -55,7 +55,7 @@ Router.post('/update', (req, res) => {
         .then(data => {
           return Promise.all([
             scheduleModel.updateOne({ drpSemester }, { $set: data }, { upsert: true }),
-            userModel.updateOne({ messenger_user_id }, { $set: { drpSemester, hash, ma_sv: doc1.ma_sv } })
+            userModel.updateOne({ messenger_user_id }, { $set: { drpSemester, hash } })
           ]);
         })
         .then(() => {
@@ -678,9 +678,11 @@ Router.get('/examImage', (req, res) => {
     }
   })
   .then(base64 => {
-    fs.writeFileSync('/scheduleimgs/' + messenger_user_id+'.png', base64, 'base64', (err) => {
+    fs.writeFileSync('/scheduleimgs/' + messenger_user_id + Date.now() + '.png', base64, 'base64', (err) => {
       console.log(err);
     });
+
+    setTimeout(() => fs.unlinkSync('/scheduleimgs/' + messenger_user_id + Date.now() + '.png'), 60000);
 
     return res.json({
       messages: [
@@ -688,7 +690,7 @@ Router.get('/examImage', (req, res) => {
           attachment: {
             type: 'image',
             payload: {
-              url: 'https://tkb.thao.pw/imgs/'+messenger_user_id+'.png'
+              url: 'https://tkb.thao.pw/imgs/'+messenger_user_id + Date.now() + '.png'
             }
           }
         }
