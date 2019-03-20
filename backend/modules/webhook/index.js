@@ -678,11 +678,13 @@ Router.get('/examImage', (req, res) => {
     }
   })
   .then(base64 => {
-    fs.writeFileSync('/scheduleimgs/' + messenger_user_id + Date.now() + '.png', base64, 'base64', (err) => {
+    let name = messenger_user_id + Date.now() + '.png';
+
+    fs.writeFileSync('/scheduleimgs/' + name, base64, 'base64', (err) => {
       console.log(err);
     });
 
-    setTimeout(() => fs.unlinkSync('/scheduleimgs/' + messenger_user_id + Date.now() + '.png'), 60000);
+    setTimeout(() => fs.unlinkSync('/scheduleimgs/' + name), 60000);
 
     return res.json({
       messages: [
@@ -690,7 +692,7 @@ Router.get('/examImage', (req, res) => {
           attachment: {
             type: 'image',
             payload: {
-              url: 'https://tkb.thao.pw/imgs/'+messenger_user_id + Date.now() + '.png'
+              url: 'https://tkb.thao.pw/imgs/'+ name
             }
           }
         }
