@@ -55,7 +55,7 @@ Router.post('/update', (req, res) => {
         .then(data => {
           return Promise.all([
             scheduleModel.updateOne({ drpSemester }, { $set: data }, { upsert: true }),
-            userModel.updateOne({ messenger_user_id }, { $set: { drpSemester, hash } })
+            userModel.updateOne({ messenger_user_id }, { $set: { drpSemester, hash, ma_sv: doc1.ma_sv } })
           ]);
         })
         .then(() => {
