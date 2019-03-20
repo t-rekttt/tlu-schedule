@@ -14,7 +14,7 @@ const request = require('request-promise');
 const fs = require('fs');
 
 Router.post('/update', (req, res) => {
-  if (!req.body || !req.body['messenger user id'] || !req.body.code) {
+  if (!req.body || !req.body['messenger user id'] || !req.body.drpSemester) {
     return res.json({
       messages: [
         {text: 'Không đủ dữ liệu!'}
@@ -23,7 +23,7 @@ Router.post('/update', (req, res) => {
   }
 
   let messenger_user_id = req.body['messenger user id'];
-  let { code } = req.body;
+  let { drpSemester } = req.body;
 
   res.json({
     messages: [
@@ -33,14 +33,11 @@ Router.post('/update', (req, res) => {
 
   let jar = request.jar();
 
-  Promise.all([
-    scheduleModel.findOne({ hash: code }),
-    userModel.findOne({ messenger_user_id })
-  ])
-    .then(([doc, doc1]) => {
+  userModel.findOne({ messenger_user_id })
+    .then((doc1) => {
       return tinchi
         .login(doc1.ma_sv, doc1.passwordHash, { jar, shouldNotEncrypt: true }) 
-        .then(() => tinchi.getTkb({ drpSemester: doc.drpSemester }, { jar }))
+        .then(() => tinchi.getTkb({ drpSemester }, { jar }))
         .then(({ data, options }) => data)
         .then(tinchi.parseTkb)
         .then(data => {
@@ -48,13 +45,13 @@ Router.post('/update', (req, res) => {
             schedule: data,
             lastUpdate: Date.now(),
             messenger_user_id,
-            hash: code
+            drpSemester
           }
         })
         .then(data => {
           return Promise.all([
-            scheduleModel.updateOne({ hash: code }, { $set: data }, { upsert: true }),
-            userModel.updateOne({ messenger_user_id }, { $set: { hash: code } })
+            scheduleModel.updateOne({ drpSemester }, { $set: data }, { upsert: true }),
+            userModel.updateOne({ messenger_user_id }, { $set: { drpSemester } })
           ]);
         })
         .then(() => {
@@ -144,7 +141,7 @@ Router.get('/updateOptions', (req, res) => {
                   return {
                     title: option.text,
                     set_attributes: {
-                      code: md5(ma_sv+option.value)
+                      drpSemester: option.value
                     },
                     block_names: ['Update API']
                   }
@@ -222,10 +219,10 @@ Router.get('/tkb', (req, res) => {
       });
     }
 
-    let { hash } = doc;
+    let { drpSemester } = doc;
 
     scheduleModel.findOne({
-      hash
+      drpSemester
     })
     .then(doc => {
       if (!doc || !doc.schedule || !doc.schedule.length) {
@@ -341,7 +338,7 @@ Router.get('/loginOptions', (req, res) => {
             buttons:[
               {
                 type: 'web_url',
-                url: 'https://tkb.thao.pw/accountlink?messenger_user_id='+req.query['messenger user id'],
+                url: 'https://tkb.vietthao.xyz/accountlink?messenger_user_id='+req.query['messenger user id'],
                 title: 'Đăng nhập',
                 messenger_extensions: true,
                 webview_height_ratio: 'tall'
