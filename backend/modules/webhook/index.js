@@ -45,7 +45,8 @@ Router.post('/update', (req, res) => {
             schedule: data,
             lastUpdate: Date.now(),
             messenger_user_id,
-            drpSemester
+            drpSemester,
+            ma_sv: doc1.ma_sv
           }
         })
         .then(data => {
@@ -219,10 +220,11 @@ Router.get('/tkb', (req, res) => {
       });
     }
 
-    let { drpSemester } = doc;
+    let { drpSemester, ma_sv } = doc;
 
     scheduleModel.findOne({
-      drpSemester
+      drpSemester,
+      ma_sv
     })
     .then(doc => {
       if (!doc || !doc.schedule || !doc.schedule.length) {
