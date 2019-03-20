@@ -35,6 +35,8 @@ Router.post('/update', (req, res) => {
 
   userModel.findOne({ messenger_user_id })
     .then((doc1) => {
+      let hash = md5(doc1.ma_sv + drpSemester);
+
       return tinchi
         .login(doc1.ma_sv, doc1.passwordHash, { jar, shouldNotEncrypt: true }) 
         .then(() => tinchi.getTkb({ drpSemester }, { jar }))
@@ -46,13 +48,14 @@ Router.post('/update', (req, res) => {
             lastUpdate: Date.now(),
             messenger_user_id,
             drpSemester,
-            ma_sv: doc1.ma_sv
+            ma_sv: doc1.ma_sv,
+            hash
           }
         })
         .then(data => {
           return Promise.all([
             scheduleModel.updateOne({ drpSemester }, { $set: data }, { upsert: true }),
-            userModel.updateOne({ messenger_user_id }, { $set: { drpSemester } })
+            userModel.updateOne({ messenger_user_id }, { $set: { drpSemester, hash } })
           ]);
         })
         .then(() => {

@@ -28,8 +28,8 @@ Router.get('/tkb', (req, res) => {
 
   return userModel.findOne({ messenger_user_id })
     .then(doc => {
-      let { hash } = doc;
-      return scheduleModel.findOne({ hash })
+      let { drpSemester, ma_sv } = doc;
+      return scheduleModel.findOne({ drpSemester, ma_sv })
     })
     .then(doc => {
       let { schedule } = doc;
