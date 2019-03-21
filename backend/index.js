@@ -1,5 +1,4 @@
 require('dotenv').config();
-require('./cron.js');
 const express = require('express');
 const app = express();
 const privateApp = express();
