@@ -464,8 +464,9 @@ Router.get('/studentMark', (req, res) => {
           .then(({ data, options }) => data)
           .then(tinchi.parseStudentMark)
           .then(data => {
+            let not_exists = 'Chưa có';
             let markMessage = data.map(subject => {
-              return { text: `${subject.ten_hoc_phan} (${subject.ma_hoc_phan}): \nSố tín chỉ: ${subject.so_tin_chi}\nQuá trình: ${subject.qua_trinh}\nThi: ${subject.thi}\nTKHP: ${subject.tkhp}\nĐiểm chữ: ${subject.diem_chu}` };
+              return { text: `${subject.ten_hoc_phan || not_exists } (${subject.ma_hoc_phan || not_exists }): \nSố tín chỉ: ${subject.so_tin_chi || not_exists }\nQuá trình: ${subject.qua_trinh || not_exists }\nThi: ${subject.thi || not_exists }\nTKHP: ${subject.tkhp || not_exists }\nĐiểm chữ: ${subject.diem_chu || not_exists }` };
             });
 
             let json = {
