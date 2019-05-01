@@ -7,6 +7,7 @@ const apiRouter = require('./modules/api/');
 const webhookRouter = require('./modules/webhook/');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+var MemoryStore = require('memorystore')(session);
 const history = require('connect-history-api-fallback');
 const mongoose = require('mongoose');
 const privateRouter = require('./modules/api/private.js');
@@ -23,6 +24,9 @@ db.once('open', () => {
 });
 
 app.use(session({
+  store: new MemoryStore({
+    checkPeriod: 86400000 // prune expired entries every 24h
+  }),
   secret: 'ahihihihihi',
   resave: false,
   saveUninitialized: true
