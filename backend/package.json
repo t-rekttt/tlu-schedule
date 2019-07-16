@@ -13,7 +13,7 @@
     "express": "^4.16.4",
     "express-session": "^1.16.1",
     "jsonpack": "^1.1.5",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "md5": "^2.2.1",
     "memorystore": "^1.6.1",
     "mongoose": "^5.4.17",
