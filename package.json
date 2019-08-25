@@ -17,5 +17,7 @@
     "url": "https://github.com/t-rekttt/tlu-schedule/issues"
   },
   "homepage": "https://github.com/t-rekttt/tlu-schedule#readme",
-  "dependencies": {}
+  "dependencies": {
+    "tinchi-api": "^1.0.15"
+  }
 }
