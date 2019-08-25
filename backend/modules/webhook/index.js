@@ -134,7 +134,7 @@ Router.get('/updateOptions', (req, res) => {
             let year = parseInt(option.text.split('_')[1]);
             let year1 = parseInt(option.text.split('_')[2]);
             let year2 = new Date().getFullYear();
-            return ((2 * year2 - year1 - year) === 1);
+            return (Math.abs(2 * year2 - year1 - year) === 1);
           });
 
           let json = {
