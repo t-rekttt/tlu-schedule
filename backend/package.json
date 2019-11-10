@@ -16,7 +16,7 @@
     "lodash": "^4.17.11",
     "md5": "^2.2.1",
     "memorystore": "^1.6.1",
-    "mongoose": "^5.4.17",
+    "mongoose": "^5.7.5",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "serialijse": "^0.1.3",
