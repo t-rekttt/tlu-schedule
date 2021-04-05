@@ -147,7 +147,7 @@ Router.get('/tkb', (req, res) => {
 
   let tkbCrawlerPromise = tinchi.getTkb(query, { jar })
     .then(({ data, options }) => data)
-    .then(tinchi.parseTkb)
+    .then(tinchi.parseTkb);
 
   let tkbDBPromise = scheduleModel.findOne({ hash })
     .lean()
@@ -188,10 +188,12 @@ Router.get('/tkb', (req, res) => {
     scheduleModel
       .update(
         { hash }, 
-        { $set: data },
+        { $set: { schedule: data } },
         { upsert: true }
       )
-      .then(() => console.log('Updated schedule for '+ma_sv))
+      .then((res) => {
+        console.log('Updated schedule for '+ma_sv, res);
+      })
       .catch(console.log);
   });
 
