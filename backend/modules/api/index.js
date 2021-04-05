@@ -10,67 +10,53 @@ var s = require("serialijse");
 
 s.declarePersistable(MemoryCookieStore);
 
-Router.post('/login', (req, res) => {
+Router.post('/login', async(req, res) => {
   if (!req.body || !req.body.ma_sv || !req.body.password) return res.fail({ message: 'Not enough data' });
 
-  let { ma_sv, password } = req.body;
+  try {
+    let { ma_sv, password } = req.body;
 
-  let userModelQueryPromise = userModel.findOne({
-    ma_sv,
-    passwordHash: md5(password)
-  })
+    let jar = new MemoryCookieStore();
 
-  let jar = new MemoryCookieStore();
-
-  userModelQueryPromise
-    .then(doc => {
-      if (doc) {
-        req.session.loggedIn = true;
-
-        req.session.info = {
-          ma_sv: doc.ma_sv,
-          passwordHash: doc.passwordHash 
-        };
-      }
-
-      return tinchi
-        .login(ma_sv, password, { jar })
-        .then(data => {
-          req.session.info = {
-            ma_sv,
-            passwordHash: md5(password)
-          };
-
-          req.session.loggedIn = true;
-
-          req.session.jar = s.serialize(jar);;
-
-          res.success({ data });
-
-          if (!doc) {
-            return userModel
-              .update(
-                { ma_sv }, 
-                { 
-                  $set: {
-                    passwordHash: md5(password)
-                  }
-                },
-                { upsert: true }
-              )
-              .then(() => {
-                console.log('Updated passwordHash for '+ma_sv)
-                resolve();
-              })
-          }
-        });
-    })
-    .catch(err => {
-      req.session.loggedIn = false;
-
-      console.log(err.message);
-      res.fail({data: err, message: err.message})
+    let doc = await userModel.findOne({
+      ma_sv,
+      passwordHash: md5(password)
     });
+
+    if (!doc) {
+      userModel
+        .update(
+          { ma_sv }, 
+          { 
+            $set: {
+              passwordHash: md5(password)
+            }
+          },
+          { upsert: true }
+        )
+        .then(() => {
+          console.log('Updated passwordHash for '+ma_sv);
+        });
+    }
+
+    let data = await tinchi.login(ma_sv, password, { jar });
+
+    req.session.info = {
+      ma_sv,
+      passwordHash: md5(password)
+    };
+
+    req.session.loggedIn = true;
+
+    req.session.jar = s.serialize(jar);;
+
+    res.success({ data });
+  } catch (err) {
+    req.session.loggedIn = false;
+
+    console.log(err.message);
+    res.fail({data: err, message: err.message});
+  }
 });
 
 Router.post('/accountlink', (req, res) => {
