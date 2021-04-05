@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/t-rekttt/tlu-schedule#readme",
   "dependencies": {
-    "tinchi-api": "^1.0.15"
+    "tinchi-api": "git+https://github.com/t-rekttt/tinchi-api.git"
   }
 }
