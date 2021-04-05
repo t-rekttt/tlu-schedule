@@ -1,7 +1,7 @@
 const Router = require('express').Router();
 const scheduleModel = require('../db/scheduleModel.js');
 const userModel = require('../db/userModel.js');
-const { generateTimeline, groupTimelineByDay } = require('tinchi-api');
+const { generateTimeline, groupTimelineByDay } = require('tinchi-api').thuyloi.tlu;
 const fs = require('fs');
 const cheerio = require('cheerio');
 const period_board = require('../../period_board.js');

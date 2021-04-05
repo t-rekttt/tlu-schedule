@@ -14,7 +14,7 @@ const privateRouter = require('./modules/api/private.js');
 
 let PORT = process.env.PORT || 3000;
 
-mongoose.connect(process.env.DB_URI, { keepAlive: true, keepAliveInitialDelay: 300000, useNewUrlParser: true });
+mongoose.connect(process.env.MONGO_URL, { keepAlive: true, keepAliveInitialDelay: 300000, useNewUrlParser: true });
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));

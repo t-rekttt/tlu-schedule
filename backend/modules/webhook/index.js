@@ -1,11 +1,11 @@
 const Router = require('express').Router();
 const scheduleModel = require('../db/scheduleModel.js');
 const userModel = require('../db/userModel.js');
-const { generateTimeline, groupTimelineByDay } = require('tinchi-api');
+const { generateTimeline, groupTimelineByDay } = require('tinchi-api').thuyloi.tlu;
 var moment = require('moment-timezone');
 moment.tz.setDefault('Asia/Ho_Chi_Minh');
 const _ = require('lodash');
-const tinchi = require('tinchi-api');
+const tinchi = require('tinchi-api').thuyloi.tlu;
 const chatfuelController = require('../chatfuel/chatfuelController.js');
 const md5 = require('md5');
 const async = require('async');

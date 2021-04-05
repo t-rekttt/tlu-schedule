@@ -1,5 +1,5 @@
 const Router = require('express').Router();
-const tinchi = require('tinchi-api');
+const tinchi = require('tinchi-api').thuyloi.tlu;
 const scheduleModel = require('../db/scheduleModel.js');
 const chatfuelController = require('../chatfuel/chatfuelController.js');
 const userModel = require('../db/userModel.js');
@@ -145,33 +145,36 @@ Router.get('/tkb', (req, res) => {
   let { ma_sv } = req.session.info;
   let hash = md5(ma_sv+(query.drpSemester || ''));
 
-  let tkbPromise = scheduleModel.findOne({ hash })
+  let tkbCrawlerPromise = tinchi.getTkb(query, { jar })
+    .then(({ data, options }) => data)
+    .then(tinchi.parseTkb)
+
+  let tkbDBPromise = scheduleModel.findOne({ hash })
     .lean()
-    .exec()
+    .exec();
+
+  let tkbPromise = tkbDBPromise
     .then(doc => {
       return new Promise(resolve => {
-        if (doc && doc.schedule && doc.schedule.length)  {
-          resolve({
-            type: 'database',
-            ...doc,
-            code: hash
-          });
-        }
-
-        tinchi.getTkb(query, { jar })
-          .then(({ data, options }) => data)
-          .then(tinchi.parseTkb)
-          .then(data => {
+        tkbDBPromise.then(doc => {
+          if (doc && doc.schedule && doc.schedule.length)  {
             resolve({
-              type: 'parser',
-              ma_sv,
-              ...query,
-              code: hash,
-              hash,
-              schedule: data,
-              lastUpdate: Date.now()
+              type: 'database',
+              ...doc,
+              code: hash
             });
-          });
+          }
+        })
+
+        tkbCrawlerPromise.then(data => resolve({
+          type: 'parser',
+          ma_sv,
+          ...query,
+          code: hash,
+          hash,
+          schedule: data,
+          lastUpdate: Date.now()
+        }));
       });
     });
 
@@ -181,22 +184,22 @@ Router.get('/tkb', (req, res) => {
     }, 20000);
   });
 
+  tkbCrawlerPromise.then(data => {
+    scheduleModel
+      .update(
+        { hash }, 
+        { $set: data },
+        { upsert: true }
+      )
+      .then(() => console.log('Updated schedule for '+ma_sv))
+      .catch(console.log);
+  });
+
   Promise.race([
     tkbPromise,
     timeout
   ])
   .then(data => {
-    if (data.type === 'parser') {
-      scheduleModel
-        .update(
-          { hash }, 
-          { $set: data },
-          { upsert: true }
-        )
-        .then(() => console.log('Updated schedule for '+ma_sv))
-        .catch(console.log);
-    }
-
     return res.success({ data });
   })
   .catch(err => {
